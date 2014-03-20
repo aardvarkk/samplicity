@@ -31,7 +31,13 @@
     <addaction name="actionAddDirectory"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -49,12 +55,12 @@
   </action>
   <action name="actionAddFile">
    <property name="text">
-    <string>Add File</string>
+    <string>Add File...</string>
    </property>
   </action>
   <action name="actionAddDirectory">
    <property name="text">
-    <string>Add Directory</string>
+    <string>Add Directory...</string>
    </property>
   </action>
  </widget>

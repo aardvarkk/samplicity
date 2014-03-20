@@ -1,4 +1,5 @@
 #include "database.h"
+#include "filesystem.h"
 
 Database::Database(QString const& filename)
 {
@@ -25,25 +26,54 @@ bool Database::createTables()
 
 void Database::addFile(QFile const& file)
 {
+    qDebug() << __FUNCSIG__;
     qDebug() << file.fileName();
 }
 
-void Database::addDirectory(QDir const& dir)
+void Database::removeFile(QFile const& file)
 {
-    qDebug() << dir;
-
-    auto myDir(dir);
-
-    myDir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
-    auto subDirs = myDir.entryInfoList();
-    for (auto subDir : subDirs) {
-        addDirectory(subDir.filePath());
-    }
-
-    myDir.setFilter(QDir::Files);
-    auto files = myDir.entryInfoList();
-    for (auto file : files) {
-        addFile(QFile(file.filePath()));
-    }
+    qDebug() << __FUNCSIG__;
+    qDebug() << file.fileName();
 }
 
+class AddDirectoryHelper : public DirectoryIteratorHelper
+{
+public:
+    AddDirectoryHelper(Database& db) : db(db) {}
+
+protected:
+    virtual void foundFile(QString const& path)
+    {
+        db.addFile(path);
+    }
+private:
+    Database& db;
+};
+
+class RemoveDirectoryHelper : public DirectoryIteratorHelper
+{
+public:
+    RemoveDirectoryHelper(Database& db) : db(db) {}
+
+protected:
+    virtual void foundFile(QString const& path)
+    {
+        db.removeFile(path);
+    }
+private:
+    Database& db;
+};
+
+void Database::addDirectory(QDir const& dir)
+{
+    qDebug() << __FUNCSIG__;
+    qDebug() << dir;
+    Filesystem::findFiles(dir, AddDirectoryHelper(*this));
+}
+
+void Database::removeDirectory(const QDir &dir)
+{
+    qDebug() << __FUNCSIG__;
+    qDebug() << dir;
+    Filesystem::findFiles(dir, RemoveDirectoryHelper(*this));
+}

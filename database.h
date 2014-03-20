@@ -11,7 +11,10 @@ public:
     Database(QString const& filename);
 
     void addFile(QFile const& file);
+    void removeFile(QFile const& file);
+
     void addDirectory(QDir const& dir);
+    void removeDirectory(QDir const& dir);
 
 protected:
     bool createTables();

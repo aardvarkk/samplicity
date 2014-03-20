@@ -1,6 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "command_adddirectory.h"
+#include "command_addfile.h"
 #include <QFileDialog>
+#include <QLayout>
+#include <QUndoView>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -8,10 +12,18 @@ MainWindow::MainWindow(QWidget *parent) :
     db(new Database("samplicity.db"))
 {
     ui->setupUi(this);
+
+    undoStack = new QUndoStack(this);
+    // auto undoView = new QUndoView(undoStack);
+    // undoView->show();
+
+    ui->menuEdit->addAction(undoStack->createUndoAction(this));
+    ui->menuEdit->addAction(undoStack->createRedoAction(this));
 }
 
 MainWindow::~MainWindow()
 {
+    delete undoStack;
     delete db;
     delete ui;
 }
@@ -26,12 +38,11 @@ void MainWindow::on_actionAddDirectory_triggered()
     QFileDialog dialog(this);
     dialog.setFileMode(QFileDialog::DirectoryOnly);
     dialog.exec();
-    QDir dir = dialog.directory();
-    db->addDirectory(dir);
+    undoStack->push(new AddDirectory(dialog.directory().absolutePath(), *db));
 }
 
 void MainWindow::on_actionAddFile_triggered()
 {
     QString file = QFileDialog::getOpenFileName(this);
-    db->addFile(file);
+    undoStack->push(new AddFile(file, *db));
 }

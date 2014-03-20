@@ -4,6 +4,7 @@
 #include "database.h"
 
 #include <QMainWindow>
+#include <QUndoStack>
 
 namespace Ui {
 class MainWindow;
@@ -25,6 +26,7 @@ private slots:
     void on_actionAddFile_triggered();
 
 private:
+    QUndoStack* undoStack;
     Ui::MainWindow *ui;
     Database* db;
 };

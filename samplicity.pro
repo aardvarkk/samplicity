@@ -14,9 +14,15 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    database.cpp
+    database.cpp \
+    command_addfile.cpp \
+    command_adddirectory.cpp \
+    filesystem.cpp
 
 HEADERS  += mainwindow.h \
-    database.h
+    database.h \
+    command_addfile.h \
+    command_adddirectory.h \
+    filesystem.h
 
 FORMS    += mainwindow.ui
