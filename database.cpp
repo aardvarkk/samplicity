@@ -1,5 +1,6 @@
 #include "database.h"
 #include "filesystem.h"
+#include "utils.h"
 
 Database::Database(QString const& filename)
 {
@@ -30,7 +31,11 @@ bool Database::addFile(QFile const& file)
     qDebug() << __FUNCSIG__;
     qDebug() << file.fileName();
 
-    db.transaction();
+    // Transaction-based if we're only adding a file
+    // If we're adding a directory, the directory makes the transaction
+    if (QObject::sender() == nullptr) {
+        db.transaction();
+    }
 
     // Create all parents, from base to tip
     auto fileInfo = QFileInfo(file);
@@ -65,7 +70,10 @@ bool Database::addFile(QFile const& file)
     query.addBindValue(fileInfo.fileName());
     success &= query.exec();
 
-    success ? db.commit() : db.rollback();
+    if (QObject::sender() == nullptr) {
+        success ? db.commit() : db.rollback();
+    }
+
     return success;
 }
 
@@ -84,7 +92,7 @@ bool Database::addDirectory(QDir const& dir)
     db.transaction();
     Filesystem fs;
     QObject::connect(&fs, SIGNAL(foundFile(QFile)), this, SLOT(addFile(QFile)));
-    auto success = fs.findFiles(dir) ? db.commit() : db.rollback();
+    auto success = fs.findFiles(dir, &Utils::getSupportedExtensions()) ? db.commit() : db.rollback();
     return success;
 }
 
@@ -92,7 +100,10 @@ bool Database::removeDirectory(const QDir &dir)
 {
     qDebug() << __FUNCSIG__;
     qDebug() << dir;
+
+    db.transaction();
     Filesystem fs;
     QObject::connect(&fs, SIGNAL(foundFile(QFile)), this, SLOT(removeFile(QFile)));
-    return fs.findFiles(dir);
+    auto success = fs.findFiles(dir, &Utils::getSupportedExtensions()) ? db.commit() : db.rollback();
+    return success;
 }

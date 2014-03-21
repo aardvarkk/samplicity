@@ -38,7 +38,7 @@ void MainWindow::on_actionAddDirectory_triggered()
     QFileDialog dialog(this);
     dialog.setFileMode(QFileDialog::DirectoryOnly);
     dialog.exec();
-    undoStack->push(new AddDirectory(dialog.directory().absolutePath(), *db));
+    undoStack->push(new AddDirectory(dialog.selectedFiles().front(), *db));
 }
 
 void MainWindow::on_actionAddFile_triggered()

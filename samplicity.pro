@@ -17,12 +17,14 @@ SOURCES += main.cpp\
     database.cpp \
     command_addfile.cpp \
     command_adddirectory.cpp \
-    filesystem.cpp
+    filesystem.cpp \
+    utils.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
     command_addfile.h \
     command_adddirectory.h \
-    filesystem.h
+    filesystem.h \
+    utils.h
 
 FORMS    += mainwindow.ui
