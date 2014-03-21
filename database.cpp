@@ -36,44 +36,20 @@ void Database::removeFile(QFile const& file)
     qDebug() << file.fileName();
 }
 
-class AddDirectoryHelper : public DirectoryIteratorHelper
-{
-public:
-    AddDirectoryHelper(Database& db) : db(db) {}
-
-protected:
-    virtual void foundFile(QString const& path)
-    {
-        db.addFile(path);
-    }
-private:
-    Database& db;
-};
-
-class RemoveDirectoryHelper : public DirectoryIteratorHelper
-{
-public:
-    RemoveDirectoryHelper(Database& db) : db(db) {}
-
-protected:
-    virtual void foundFile(QString const& path)
-    {
-        db.removeFile(path);
-    }
-private:
-    Database& db;
-};
-
 void Database::addDirectory(QDir const& dir)
 {
     qDebug() << __FUNCSIG__;
     qDebug() << dir;
-    Filesystem::findFiles(dir, AddDirectoryHelper(*this));
+    Filesystem fs;
+    QObject::connect(&fs, SIGNAL(foundFile(QFile)), this, SLOT(addFile(QFile)));
+    fs.findFiles(dir);
 }
 
 void Database::removeDirectory(const QDir &dir)
 {
     qDebug() << __FUNCSIG__;
     qDebug() << dir;
-    Filesystem::findFiles(dir, RemoveDirectoryHelper(*this));
+    Filesystem fs;
+    QObject::connect(&fs, SIGNAL(foundFile(QFile)), this, SLOT(removeFile(QFile)));
+    fs.findFiles(dir);
 }

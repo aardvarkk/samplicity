@@ -4,18 +4,14 @@
 #include <QDir>
 #include <QString>
 
-class DirectoryIteratorHelper
+class Filesystem : public QObject
 {
-public:
-    virtual void foundFile(QString const& path) = 0;
-};
+    Q_OBJECT
 
-class Filesystem
-{
 public:
-    Filesystem();
-
-    static void findFiles(QDir const& dir, DirectoryIteratorHelper& helper);
+    void findFiles(QDir const& dir);
+signals:
+    void foundFile(QFile const& file);
 };
 
 #endif // FILESYSTEM_H
