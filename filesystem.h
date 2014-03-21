@@ -9,7 +9,7 @@ class Filesystem : public QObject
     Q_OBJECT
 
 public:
-    void findFiles(QDir const& dir);
+    bool findFiles(QDir const& dir);
 signals:
     void foundFile(QFile const& file);
 };

@@ -20,36 +20,57 @@ bool Database::createTables()
 {
     auto success = true;
     QSqlQuery query;
-    success &= query.exec("CREATE TABLE IF NOT EXISTS samples (id INTEGER PRIMARY KEY, name TEXT, file TEXT, dir TEXT)");
+    success &= query.exec("CREATE TABLE IF NOT EXISTS dirs (id INTEGER PRIMARY KEY, parent_id INTEGER, path TEXT UNIQUE)");
+    success &= query.exec("CREATE TABLE IF NOT EXISTS samples (id INTEGER PRIMARY KEY, dir_id INTEGER, name TEXT, filename TEXT)");
     return success;
 }
 
-void Database::addFile(QFile const& file)
+bool Database::addFile(QFile const& file)
 {
     qDebug() << __FUNCSIG__;
     qDebug() << file.fileName();
+
+    auto success = true;
+    QSqlQuery query;
+
+    // Create all parents, from base to tip
+    QDir dir = QFileInfo(file).absoluteDir();
+    QStringList parents;
+    do {
+        parents << dir.absolutePath();
+    } while (dir.cdUp());
+    auto it = parents.constEnd();
+    while (it != parents.constBegin()) {
+        --it;
+        query.prepare("INSERT OR IGNORE INTO dirs (path) VALUES (?)");
+        query.addBindValue(*it);
+        success &= query.exec();
+    }
+
+    return success;
 }
 
-void Database::removeFile(QFile const& file)
+bool Database::removeFile(QFile const& file)
 {
     qDebug() << __FUNCSIG__;
     qDebug() << file.fileName();
+    return true;
 }
 
-void Database::addDirectory(QDir const& dir)
+bool Database::addDirectory(QDir const& dir)
 {
     qDebug() << __FUNCSIG__;
     qDebug() << dir;
     Filesystem fs;
     QObject::connect(&fs, SIGNAL(foundFile(QFile)), this, SLOT(addFile(QFile)));
-    fs.findFiles(dir);
+    return fs.findFiles(dir);
 }
 
-void Database::removeDirectory(const QDir &dir)
+bool Database::removeDirectory(const QDir &dir)
 {
     qDebug() << __FUNCSIG__;
     qDebug() << dir;
     Filesystem fs;
     QObject::connect(&fs, SIGNAL(foundFile(QFile)), this, SLOT(removeFile(QFile)));
-    fs.findFiles(dir);
+    return fs.findFiles(dir);
 }

@@ -1,6 +1,6 @@
 #include "filesystem.h"
 
-void Filesystem::findFiles(QDir const& dir)
+bool Filesystem::findFiles(QDir const& dir)
 {
     auto myDir(dir);
 
@@ -15,4 +15,6 @@ void Filesystem::findFiles(QDir const& dir)
     for (auto file : files) {
         emit foundFile(QFile(file.absoluteFilePath()));
     }
+
+    return true;
 }
