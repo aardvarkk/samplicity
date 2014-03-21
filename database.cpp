@@ -30,15 +30,17 @@ bool Database::addFile(QFile const& file)
     qDebug() << __FUNCSIG__;
     qDebug() << file.fileName();
 
-    auto success = true;
-    QSqlQuery query;
+    db.transaction();
 
     // Create all parents, from base to tip
-    QDir dir = QFileInfo(file).absoluteDir();
+    auto fileInfo = QFileInfo(file);
+    auto dir = fileInfo.absoluteDir();
     QStringList parents;
     do {
         parents << dir.absolutePath();
     } while (dir.cdUp());
+    auto success = true;
+    QSqlQuery query;
     auto it = parents.constEnd();
     while (it != parents.constBegin()) {
         --it;
@@ -47,6 +49,23 @@ bool Database::addFile(QFile const& file)
         success &= query.exec();
     }
 
+    // Get its parent id
+    query.prepare("SELECT id FROM dirs WHERE path = ? LIMIT 1");
+    query.addBindValue(fileInfo.absolutePath());
+    success &= query.exec();
+    if (!query.next()) {
+        return false;
+    }
+    int parent_id = query.value(0).toInt();
+
+    // Add a new sample record
+    query.prepare("INSERT INTO samples (dir_id, name, filename) VALUES (?,?,?)");
+    query.addBindValue(parent_id);
+    query.addBindValue(fileInfo.fileName());
+    query.addBindValue(fileInfo.fileName());
+    success &= query.exec();
+
+    success ? db.commit() : db.rollback();
     return success;
 }
 
@@ -61,9 +80,12 @@ bool Database::addDirectory(QDir const& dir)
 {
     qDebug() << __FUNCSIG__;
     qDebug() << dir;
+
+    db.transaction();
     Filesystem fs;
     QObject::connect(&fs, SIGNAL(foundFile(QFile)), this, SLOT(addFile(QFile)));
-    return fs.findFiles(dir);
+    auto success = fs.findFiles(dir) ? db.commit() : db.rollback();
+    return success;
 }
 
 bool Database::removeDirectory(const QDir &dir)
