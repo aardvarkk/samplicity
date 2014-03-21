@@ -31,14 +31,18 @@ bool Database::addFile(QFile const& file)
     qDebug() << __FUNCSIG__;
     qDebug() << file.fileName();
 
+    auto fileInfo = QFileInfo(file);
+
     // Transaction-based if we're only adding a file
     // If we're adding a directory, the directory makes the transaction
     if (QObject::sender() == nullptr) {
+        if (!Utils::isSupportedExtension(fileInfo.suffix())) {
+            return false;
+        }
         db.transaction();
     }
 
     // Create all parents, from base to tip
-    auto fileInfo = QFileInfo(file);
     auto dir = fileInfo.absoluteDir();
     QStringList parents;
     do {
@@ -92,7 +96,7 @@ bool Database::addDirectory(QDir const& dir)
     db.transaction();
     Filesystem fs;
     QObject::connect(&fs, SIGNAL(foundFile(QFile)), this, SLOT(addFile(QFile)));
-    auto success = fs.findFiles(dir, &Utils::getSupportedExtensions()) ? db.commit() : db.rollback();
+    auto success = fs.findFiles(dir, &Utils::getSupportedNameFilters()) ? db.commit() : db.rollback();
     return success;
 }
 
@@ -104,6 +108,6 @@ bool Database::removeDirectory(const QDir &dir)
     db.transaction();
     Filesystem fs;
     QObject::connect(&fs, SIGNAL(foundFile(QFile)), this, SLOT(removeFile(QFile)));
-    auto success = fs.findFiles(dir, &Utils::getSupportedExtensions()) ? db.commit() : db.rollback();
+    auto success = fs.findFiles(dir, &Utils::getSupportedNameFilters()) ? db.commit() : db.rollback();
     return success;
 }

@@ -55,7 +55,7 @@
   </action>
   <action name="actionAddFile">
    <property name="text">
-    <string>Add File...</string>
+    <string>Add Files...</string>
    </property>
   </action>
   <action name="actionAddDirectory">

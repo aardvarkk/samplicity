@@ -38,11 +38,15 @@ void MainWindow::on_actionAddDirectory_triggered()
     QFileDialog dialog(this);
     dialog.setFileMode(QFileDialog::DirectoryOnly);
     dialog.exec();
-    undoStack->push(new AddDirectory(dialog.selectedFiles().front(), *db));
+    for (auto d : dialog.selectedFiles()) {
+        undoStack->push(new AddDirectory(d, *db));
+    }
 }
 
 void MainWindow::on_actionAddFile_triggered()
 {
-    QString file = QFileDialog::getOpenFileName(this);
-    undoStack->push(new AddFile(file, *db));
+    QStringList files = QFileDialog::getOpenFileNames(this);
+    for (auto f : files) {
+        undoStack->push(new AddFile(f, *db));
+    }
 }
