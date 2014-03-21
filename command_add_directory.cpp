@@ -1,4 +1,4 @@
-#include "command_adddirectory.h"
+#include "command_add_directory.h"
 
 AddDirectory::AddDirectory(QString const& path, Database& db, QUndoCommand* parent) :
     path(path), db(db), QUndoCommand(parent)

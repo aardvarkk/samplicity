@@ -51,25 +51,19 @@ bool Database::addFile(QFile const& file)
     auto success = true;
     QSqlQuery query;
     auto it = parents.constEnd();
+    int id = -1;
     while (it != parents.constBegin()) {
         --it;
-        query.prepare("INSERT OR IGNORE INTO dirs (path) VALUES (?)");
+        query.prepare("INSERT OR IGNORE INTO dirs (parent_id, path) VALUES (?,?)");
+        query.addBindValue(id >= 0 ? id : QVariant(QVariant::Int));
         query.addBindValue(*it);
         success &= query.exec();
+        id = query.lastInsertId().toInt();
     }
-
-    // Get its parent id
-    query.prepare("SELECT id FROM dirs WHERE path = ? LIMIT 1");
-    query.addBindValue(fileInfo.absolutePath());
-    success &= query.exec();
-    if (!query.next()) {
-        return false;
-    }
-    int parent_id = query.value(0).toInt();
 
     // Add a new sample record
     query.prepare("INSERT INTO samples (dir_id, name, filename) VALUES (?,?,?)");
-    query.addBindValue(parent_id);
+    query.addBindValue(id);
     query.addBindValue(fileInfo.fileName());
     query.addBindValue(fileInfo.fileName());
     success &= query.exec();

@@ -15,16 +15,18 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     database.cpp \
-    command_addfile.cpp \
-    command_adddirectory.cpp \
     filesystem.cpp \
-    utils.cpp
+    utils.cpp \
+    directories_model.cpp \
+    command_add_directory.cpp \
+    command_add_file.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
-    command_addfile.h \
-    command_adddirectory.h \
     filesystem.h \
-    utils.h
+    utils.h \
+    directories_model.h \
+    command_add_directory.h \
+    command_add_file.h
 
 FORMS    += mainwindow.ui

@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "command_adddirectory.h"
-#include "command_addfile.h"
+#include "command_add_directory.h"
+#include "command_add_file.h"
 #include <QFileDialog>
 #include <QLayout>
 #include <QUndoView>
@@ -9,7 +9,8 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    db(new Database("samplicity.db"))
+    db(new Database("samplicity.db")),
+    directoriesModel(new DirectoriesModel(*db))
 {
     ui->setupUi(this);
 
@@ -19,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->menuEdit->addAction(undoStack->createUndoAction(this));
     ui->menuEdit->addAction(undoStack->createRedoAction(this));
+
+    ui->dirsTreeView->setModel(directoriesModel);
 }
 
 MainWindow::~MainWindow()

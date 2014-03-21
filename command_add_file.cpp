@@ -1,4 +1,4 @@
-#include "command_addfile.h"
+#include "command_add_file.h"
 
 AddFile::AddFile(QString const& path, Database& db, QUndoCommand* parent) :
     path(path), db(db), QUndoCommand(parent)

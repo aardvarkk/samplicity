@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "database.h"
+#include "directories_model.h"
 
 #include <QMainWindow>
 #include <QUndoStack>
@@ -26,9 +27,10 @@ private slots:
     void on_actionAddFile_triggered();
 
 private:
-    QUndoStack* undoStack;
     Ui::MainWindow *ui;
     Database* db;
+    QUndoStack* undoStack;
+    DirectoriesModel* directoriesModel;
 };
 
 #endif // MAINWINDOW_H
