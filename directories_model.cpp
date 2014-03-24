@@ -50,7 +50,7 @@ TreeItem* TreeItem::parent()
     return parentItem;
 }
 
-DirectoriesModel::DirectoriesModel(Database const& db) : db(db)
+DirectoriesModel::DirectoriesModel(Database& db) : db(db)
 {
     QList<QVariant> rootData;
     rootData << tr("Directory");
@@ -188,4 +188,18 @@ QVariant DirectoriesModel::headerData(int section, Qt::Orientation orientation,
     }
 
     return QVariant();
+}
+
+void DirectoriesModel::addDirectory(QString const& path)
+{
+    beginResetModel();
+    db.addDirectory(path);
+    endResetModel();
+}
+
+void DirectoriesModel::removeDirectory(QString const& path)
+{
+    beginResetModel();
+    db.removeDirectory(path);
+    endResetModel();
 }

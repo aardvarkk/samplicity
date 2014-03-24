@@ -11,12 +11,15 @@ class SamplesModel : public QAbstractListModel
 public:
     SamplesModel(Database const& db);
     ~SamplesModel();
+    void setSamples(QList<Sample> const* samples = nullptr);
 
     virtual QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     virtual QVariant headerData(int section, Qt::Orientation orientation,
                                 int role = Qt::DisplayRole) const;
+
+    void setFilterDirs(QList<QDir> const& filterDirs);
 
 private:
     QList<Sample*> items;

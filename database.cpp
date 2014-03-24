@@ -132,13 +132,47 @@ QList<QDir> Database::getChildren(QDir const* dir) const
     return children;
 }
 
-QList<Sample> Database::getSamples() const
+void addChildren(int dir_id, QStringList& ids) {
+    // Add ourselves
+    ids << QString::number(dir_id);
+
+    // Add all of our children (items who have us as a parent)
+    QSqlQuery query;
+    query.prepare("SELECT id FROM dirs WHERE parent_id = ?");
+    query.addBindValue(dir_id);
+    query.exec();
+    while (query.next()) {
+        addChildren(query.value(0).toInt(), ids);
+    }
+}
+
+QList<Sample> Database::getSamples(QList<QDir> const* filterDirs) const
 {
     QList<Sample> samples;
     QSqlQuery query;
-    query.exec("SELECT name, filename FROM samples");
+
+    if (filterDirs) {
+        // Create a list of all IDs that would be valid parents for samples based on given dirs
+        QStringList ids;
+        for (auto filterDir : *filterDirs) {
+            QSqlQuery getID;
+            getID.prepare("SELECT id FROM dirs WHERE path = ?");
+            getID.addBindValue(filterDir.absolutePath());
+            getID.exec();
+            while (getID.next()) {
+                addChildren(getID.value(0).toInt(), ids);
+            }
+        }
+
+        // Get all matching samples
+        query.exec("SELECT name, filename FROM samples WHERE dir_id IN (" + ids.join(",") + ")");
+    } else {
+        query.exec("SELECT name, filename FROM samples");
+    }
+
     while (query.next()) {
         samples << Sample(query.value(0).toString(), query.value(1).toString());
     }
+
     return samples;
 }

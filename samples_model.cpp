@@ -2,21 +2,38 @@
 
 SamplesModel::SamplesModel(Database const& db) : db(db)
 {
-    auto samples = db.getSamples();
-    for (auto sample : samples) {
-        items << new Sample(sample);
-    }
+    setSamples(&db.getSamples(nullptr));
 }
 
 SamplesModel::~SamplesModel()
 {
+    setSamples(nullptr);
+}
+
+void SamplesModel::setSamples(QList<Sample> const* samples)
+{
+    beginResetModel();
+
     for (auto sample : items) {
         delete sample;
     }
+    items.clear();
+
+    if (samples) {
+        for (auto sample : *samples) {
+            items << new Sample(sample);
+        }
+    }
+
+    endResetModel();
 }
 
 QModelIndex SamplesModel::index(int row, int column, const QModelIndex &parent) const
 {
+    if (!hasIndex(row, column, parent)) {
+        return QModelIndex();
+    }
+
     return createIndex(row, column, items[row]);
 }
 
@@ -51,4 +68,12 @@ QVariant SamplesModel::headerData(int section, Qt::Orientation orientation, int 
     }
 
     return QVariant();
+}
+
+void SamplesModel::setFilterDirs(QList<QDir> const& filterDirs)
+{
+    qDebug() << __FUNCSIG__;
+    qDebug() << filterDirs;
+
+    setSamples(&db.getSamples(&filterDirs));
 }

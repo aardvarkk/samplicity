@@ -47,6 +47,8 @@ void MainWindow::filterSamples()
 
     qDebug() << __FUNCSIG__;
     qDebug() << selectedDirs;
+
+    samplesModel->setFilterDirs(selectedDirs);
 }
 
 void MainWindow::on_dirsTreeViewSelectionChanged(QItemSelection const& selected, QItemSelection const& deselected)
@@ -74,7 +76,7 @@ void MainWindow::on_actionAddDirectory_triggered()
     dialog.setFileMode(QFileDialog::DirectoryOnly);
     dialog.exec();
     for (auto d : dialog.selectedFiles()) {
-        undoStack->push(new AddDirectory(d, *db));
+        undoStack->push(new AddDirectory(d, *directoriesModel));
     }
 }
 

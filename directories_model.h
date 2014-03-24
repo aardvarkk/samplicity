@@ -31,7 +31,7 @@ class DirectoriesModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    DirectoriesModel(Database const& db);
+    DirectoriesModel(Database& db);
     ~DirectoriesModel();
 
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
@@ -42,10 +42,13 @@ public:
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
+    void addDirectory(QString const& path);
+    void removeDirectory(QString const& path);
+
 private:
     void addTree(TreeItem* parent, Database const& db);
 
-    Database const& db;
+    Database& db;
     TreeItem* rootItem;
 };
 

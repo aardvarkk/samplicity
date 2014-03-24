@@ -8,9 +8,8 @@ QStringList Utils::getSupportedExtensions()
 QStringList Utils::getSupportedNameFilters()
 {
     QStringList nameFilters;
-    for (auto e : Utils::getSupportedExtensions())
-    {
-        nameFilters << "*." << e;
+    for (auto e : Utils::getSupportedExtensions()) {
+        nameFilters << "*." + e;
     }
     return nameFilters;
 }
