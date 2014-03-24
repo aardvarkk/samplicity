@@ -26,7 +26,11 @@ private slots:
 
     void on_actionAddFile_triggered();
 
+    void on_dirsTreeViewSelectionChanged(QItemSelection const& selected, QItemSelection const& deselected);
+
 private:
+    void filterSamples();
+
     Ui::MainWindow *ui;
     Database* db;
     QUndoStack* undoStack;

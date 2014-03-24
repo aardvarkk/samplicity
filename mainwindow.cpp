@@ -22,6 +22,33 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->menuEdit->addAction(undoStack->createRedoAction(this));
 
     ui->dirsTreeView->setModel(directoriesModel);
+    QObject::connect(
+        ui->dirsTreeView->selectionModel(),
+        SIGNAL(selectionChanged(QItemSelection const&, QItemSelection const&)),
+        this,
+        SLOT(on_dirsTreeViewSelectionChanged(QItemSelection const&, QItemSelection const&))
+        );
+}
+
+void MainWindow::filterSamples()
+{
+    QList<QDir> selectedDirs;
+
+    // Get all selected directories
+    auto selection = ui->dirsTreeView->selectionModel()->selection();
+    for (auto selectionRange : selection) {
+        for (auto modelIdx : selectionRange.indexes()) {
+            selectedDirs << QDir(directoriesModel->data(modelIdx, Qt::EditRole).toString());
+        }
+    }
+
+    qDebug() << __FUNCSIG__;
+    qDebug() << selectedDirs;
+}
+
+void MainWindow::on_dirsTreeViewSelectionChanged(QItemSelection const& selected, QItemSelection const& deselected)
+{
+    filterSamples();
 }
 
 MainWindow::~MainWindow()
