@@ -105,3 +105,29 @@ bool Database::removeDirectory(const QDir &dir)
     auto success = fs.findFiles(dir, &Utils::getSupportedNameFilters()) ? db.commit() : db.rollback();
     return success;
 }
+
+QList<QDir> Database::getChildren(QDir const* dir) const
+{
+    QList<QDir> children;
+
+    QSqlQuery query;
+    if (dir) {
+        QSqlQuery getID;
+        getID.prepare("SELECT id FROM dirs WHERE path = ?");
+        getID.addBindValue(dir->absolutePath());
+        getID.exec();
+        if (getID.next()) {
+            query.prepare("SELECT path FROM dirs WHERE parent_id = ?");
+            query.addBindValue(getID.value(0));
+            query.exec();
+        }
+    } else {
+        query.exec("SELECT path FROM dirs WHERE parent_id IS NULL");
+    }
+
+    while (query.next()) {
+        children << QDir(query.value(0).toString());
+    }
+
+    return children;
+}
