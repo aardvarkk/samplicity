@@ -152,7 +152,11 @@ QVariant DirectoriesModel::data(const QModelIndex &index, int role) const
 
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
 
-    return item->data(index.column());
+    // Return only the current level
+    // Doesn't work for base drives, so have to account for that
+    QDir dir = QDir(item->data(index.column()).toString());
+    QString display = dir.dirName();
+    return display.length() <= 0 ? dir.absolutePath() : display;
 }
 
 Qt::ItemFlags DirectoriesModel::flags(const QModelIndex &index) const
