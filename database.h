@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QtSql>
+#include "sample.h"
 
 class Database : public QObject
 {
@@ -15,6 +16,7 @@ public:
     bool addDirectory(QDir const& dir);
     bool removeDirectory(QDir const& dir);
     QList<QDir> getChildren(QDir const* dir) const;
+    QList<Sample> getSamples() const;
 
 public slots:
     bool addFile(QFile const& file);

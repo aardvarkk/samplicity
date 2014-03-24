@@ -10,7 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     db(new Database("samplicity.db")),
-    directoriesModel(new DirectoriesModel(*db))
+    directoriesModel(new DirectoriesModel(*db)),
+    samplesModel(new SamplesModel(*db))
 {
     ui->setupUi(this);
 
@@ -28,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
         this,
         SLOT(on_dirsTreeViewSelectionChanged(QItemSelection const&, QItemSelection const&))
         );
+
+    ui->samplesTreeView->setModel(samplesModel);
 }
 
 void MainWindow::filterSamples()
@@ -53,6 +56,8 @@ void MainWindow::on_dirsTreeViewSelectionChanged(QItemSelection const& selected,
 
 MainWindow::~MainWindow()
 {
+    delete samplesModel;
+    delete directoriesModel;
     delete undoStack;
     delete db;
     delete ui;

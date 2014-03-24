@@ -131,3 +131,14 @@ QList<QDir> Database::getChildren(QDir const* dir) const
 
     return children;
 }
+
+QList<Sample> Database::getSamples() const
+{
+    QList<Sample> samples;
+    QSqlQuery query;
+    query.exec("SELECT name, filename FROM samples");
+    while (query.next()) {
+        samples << Sample(query.value(0).toString(), query.value(1).toString());
+    }
+    return samples;
+}

@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     utils.cpp \
     directories_model.cpp \
     command_add_directory.cpp \
-    command_add_file.cpp
+    command_add_file.cpp \
+    samples_model.cpp \
+    sample.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
@@ -27,6 +29,8 @@ HEADERS  += mainwindow.h \
     utils.h \
     directories_model.h \
     command_add_directory.h \
-    command_add_file.h
+    command_add_file.h \
+    samples_model.h \
+    sample.h
 
 FORMS    += mainwindow.ui

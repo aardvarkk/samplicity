@@ -1,11 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "database.h"
-#include "directories_model.h"
-
 #include <QMainWindow>
 #include <QUndoStack>
+#include "database.h"
+#include "directories_model.h"
+#include "samples_model.h"
 
 namespace Ui {
 class MainWindow;
@@ -35,6 +35,7 @@ private:
     Database* db;
     QUndoStack* undoStack;
     DirectoriesModel* directoriesModel;
+    SamplesModel* samplesModel;
 };
 
 #endif // MAINWINDOW_H
