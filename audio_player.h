@@ -2,6 +2,7 @@
 #define AUDIO_PLAYER_H
 
 #include <QFile>
+#include <QMediaPlayer>
 #include <QSoundEffect>
 
 class AudioPlayer
@@ -13,7 +14,8 @@ public:
     void stop();
 
 private:
-    QSoundEffect soundEffect;
+    QMediaPlayer mediaPlayer;
+    QSoundEffect* soundEffect;
 };
 
 #endif // AUDIO_PLAYER_H
