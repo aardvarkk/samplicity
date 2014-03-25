@@ -31,6 +31,14 @@ MainWindow::MainWindow(QWidget *parent) :
         );
 
     ui->samplesTreeView->setModel(samplesModel);
+
+    // Make it such that when any directories/files are added or changed,
+    // the samples view is refreshed
+    QObject::connect(
+        directoriesModel,
+        SIGNAL(modelReset()),
+        samplesModel,
+        SLOT(refresh()));
 }
 
 void MainWindow::filterSamples()

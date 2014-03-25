@@ -50,8 +50,18 @@ TreeItem* TreeItem::parent()
     return parentItem;
 }
 
-DirectoriesModel::DirectoriesModel(Database& db) : db(db)
+DirectoriesModel::DirectoriesModel(Database& db) : db(db), rootItem(nullptr)
 {
+    refresh();
+}
+
+// Our model depends upon our own internal data structure (not the database directly)
+// So whenever we change something about the database we need to refresh our internal representation
+void DirectoriesModel::refresh()
+{
+    delete rootItem;
+    rootItem = nullptr;
+
     QList<QVariant> rootData;
     rootData << tr("Directory");
     rootItem = new TreeItem(rootData);
@@ -60,7 +70,7 @@ DirectoriesModel::DirectoriesModel(Database& db) : db(db)
 
 void DirectoriesModel::addTree(TreeItem* parent, Database const& db)
 {
-    QList<QDir> children = parent == rootItem ? db.getChildren(nullptr) : db.getChildren(&QDir(parent->data(0).toString()));
+    QList<QDir> children = parent == rootItem ? db.getDirectoryChildren(nullptr) : db.getDirectoryChildren(&QDir(parent->data(0).toString()));
 
     // Add the children, then recursively add all of their children
     for (auto child : children) {
@@ -194,6 +204,7 @@ void DirectoriesModel::addDirectory(QString const& path)
 {
     beginResetModel();
     db.addDirectory(path);
+    refresh();
     endResetModel();
 }
 
@@ -201,5 +212,6 @@ void DirectoriesModel::removeDirectory(QString const& path)
 {
     beginResetModel();
     db.removeDirectory(path);
+    refresh();
     endResetModel();
 }

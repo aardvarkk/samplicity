@@ -106,7 +106,7 @@ bool Database::removeDirectory(const QDir &dir)
     return success;
 }
 
-QList<QDir> Database::getChildren(QDir const* dir) const
+QList<QDir> Database::getDirectoryChildren(QDir const* dir) const
 {
     QList<QDir> children;
 

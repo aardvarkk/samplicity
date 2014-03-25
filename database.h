@@ -15,7 +15,7 @@ public:
 
     bool addDirectory(QDir const& dir);
     bool removeDirectory(QDir const& dir);
-    QList<QDir> getChildren(QDir const* dir) const;
+    QList<QDir> getDirectoryChildren(QDir const* dir) const;
     QList<Sample> getSamples(QList<QDir> const* filterDirs = nullptr) const;
 
 public slots:

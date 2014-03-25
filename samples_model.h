@@ -8,6 +8,8 @@
 
 class SamplesModel : public QAbstractListModel
 {
+    Q_OBJECT
+
 public:
     SamplesModel(Database const& db);
     ~SamplesModel();
@@ -20,6 +22,9 @@ public:
                                 int role = Qt::DisplayRole) const;
 
     void setFilterDirs(QList<QDir> const& filterDirs);
+
+public slots:
+    void refresh();
 
 private:
     QList<Sample*> items;

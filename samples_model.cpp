@@ -2,6 +2,13 @@
 
 SamplesModel::SamplesModel(Database const& db) : db(db)
 {
+    refresh();
+}
+
+void SamplesModel::refresh()
+{
+    qDebug() << __FUNCSIG__;
+
     setSamples(&db.getSamples(nullptr));
 }
 

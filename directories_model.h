@@ -45,6 +45,8 @@ public:
     void addDirectory(QString const& path);
     void removeDirectory(QString const& path);
 
+    void refresh();
+
 private:
     void addTree(TreeItem* parent, Database const& db);
 
