@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui sql multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     command_add_directory.cpp \
     command_add_file.cpp \
     samples_model.cpp \
-    sample.cpp
+    sample.cpp \
+    audio_player.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
@@ -31,6 +32,7 @@ HEADERS  += mainwindow.h \
     command_add_directory.h \
     command_add_file.h \
     samples_model.h \
-    sample.h
+    sample.h \
+    audio_player.h
 
 FORMS    += mainwindow.ui

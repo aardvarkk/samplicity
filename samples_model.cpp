@@ -17,6 +17,11 @@ SamplesModel::~SamplesModel()
     setSamples(nullptr);
 }
 
+Sample const* SamplesModel::getSample(QModelIndex const& index)
+{
+    return static_cast<Sample*>(index.internalPointer());
+}
+
 void SamplesModel::setSamples(QList<Sample> const* samples)
 {
     beginResetModel();

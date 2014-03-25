@@ -22,6 +22,7 @@ public:
                                 int role = Qt::DisplayRole) const;
 
     void setFilterDirs(QList<QDir> const& filterDirs);
+    Sample const* getSample(QModelIndex const& index);
 
 public slots:
     void refresh();

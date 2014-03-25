@@ -11,7 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     db(new Database("samplicity.db")),
     directoriesModel(new DirectoriesModel(*db)),
-    samplesModel(new SamplesModel(*db))
+    samplesModel(new SamplesModel(*db)),
+    audioPlayer(new AudioPlayer)
 {
     ui->setupUi(this);
 
@@ -23,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->menuEdit->addAction(undoStack->createRedoAction(this));
 
     ui->dirsTreeView->setModel(directoriesModel);
+
+    // When you change the directory selection, refilter the samples
     QObject::connect(
         ui->dirsTreeView->selectionModel(),
         SIGNAL(selectionChanged(QItemSelection const&, QItemSelection const&)),
@@ -39,6 +42,29 @@ MainWindow::MainWindow(QWidget *parent) :
         SIGNAL(modelReset()),
         samplesModel,
         SLOT(refresh()));
+
+    QObject::connect(
+        ui->samplesTreeView->selectionModel(),
+        SIGNAL(currentChanged(QModelIndex,QModelIndex)),
+        this,
+        SLOT(on_samplesTreeViewSelectionChanged(QModelIndex, QModelIndex))
+        );
+}
+
+void MainWindow::on_samplesTreeViewSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected)
+{
+    auto sample = samplesModel->getSample(selected);
+    qDebug() << sample->path;
+}
+
+MainWindow::~MainWindow()
+{
+    delete audioPlayer;
+    delete samplesModel;
+    delete directoriesModel;
+    delete undoStack;
+    delete db;
+    delete ui;
 }
 
 void MainWindow::filterSamples()
@@ -62,15 +88,6 @@ void MainWindow::filterSamples()
 void MainWindow::on_dirsTreeViewSelectionChanged(QItemSelection const& selected, QItemSelection const& deselected)
 {
     filterSamples();
-}
-
-MainWindow::~MainWindow()
-{
-    delete samplesModel;
-    delete directoriesModel;
-    delete undoStack;
-    delete db;
-    delete ui;
 }
 
 void MainWindow::on_actionExit_triggered()

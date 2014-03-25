@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QUndoStack>
+#include "audio_player.h"
 #include "database.h"
 #include "directories_model.h"
 #include "samples_model.h"
@@ -28,6 +29,8 @@ private slots:
 
     void on_dirsTreeViewSelectionChanged(QItemSelection const& selected, QItemSelection const& deselected);
 
+    void on_samplesTreeViewSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected);
+
 private:
     void filterSamples();
 
@@ -36,6 +39,7 @@ private:
     QUndoStack* undoStack;
     DirectoriesModel* directoriesModel;
     SamplesModel* samplesModel;
+    AudioPlayer* audioPlayer;
 };
 
 #endif // MAINWINDOW_H
