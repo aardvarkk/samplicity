@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::on_samplesTreeViewSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected)
 {
     auto sample = samplesModel->getSample(selected);
-    qDebug() << sample->path;
+    audioPlayer->play(sample->path);
 }
 
 MainWindow::~MainWindow()
