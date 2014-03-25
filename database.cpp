@@ -52,41 +52,47 @@ bool Database::addFile(QFile const& file)
     do {
         parents << dir.absolutePath();
     } while (dir.cdUp());
-    auto success = true;
+
     QSqlQuery query;
     auto it = parents.constEnd();
-    int id = -1;
+    int parent_id = -1;
     while (it != parents.constBegin()) {
         --it;
         query.prepare("INSERT OR IGNORE INTO dirs (parent_id, path) VALUES (?,?)");
-        query.addBindValue(id >= 0 ? id : QVariant(QVariant::Int));
+        query.addBindValue(parent_id >= 0 ? parent_id : QVariant(QVariant::Int));
         query.addBindValue(*it);
-        success &= query.exec();
-        id = query.lastInsertId().toInt();
+        query.exec();
+
+        // Get the relevant parent for this directory
+        query.prepare("SELECT id FROM dirs WHERE path = ?");
+        query.addBindValue(*it);
+        query.exec();
+        while (query.next()) {
+            parent_id = query.value(0).toInt();
+        }
     }
 
     // Get the relevant parent for this file
     query.prepare("SELECT id FROM dirs WHERE path = ?");
     query.addBindValue(fileInfo.dir().absolutePath());
     query.exec();
-    if (query.next()) {
-        id = query.value(0).toInt();
-    } else {
-        return false;
+    int dir_id;
+    while (query.next()) {
+        dir_id = query.value(0).toInt();
     }
 
     // Add a new sample record
     query.prepare("INSERT INTO samples (dir_id, name, filename) VALUES (?,?,?)");
-    query.addBindValue(id);
+    query.addBindValue(dir_id);
     query.addBindValue(fileInfo.fileName());
     query.addBindValue(fileInfo.fileName());
-    success &= query.exec();
+    auto success = query.exec();
 
     if (QObject::sender() == nullptr) {
         success ? db.commit() : db.rollback();
     }
 
-    return success;
+    return true;
 }
 
 bool Database::removeFile(QFile const& file)
