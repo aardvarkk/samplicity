@@ -15,6 +15,10 @@ Database::Database(QString const& filename)
     if (!createTables()) {
         throw std::exception("Unable to create database tables");
     }
+
+    // Could remove this -- it just sanitizes/checks the database upon opening it up
+    // Not strictly necessary...
+    // cleanup();
 }
 
 bool Database::createTables()
@@ -22,7 +26,7 @@ bool Database::createTables()
     auto success = true;
     QSqlQuery query;
     success &= query.exec("CREATE TABLE IF NOT EXISTS dirs (id INTEGER PRIMARY KEY, parent_id INTEGER, path TEXT UNIQUE)");
-    success &= query.exec("CREATE TABLE IF NOT EXISTS samples (id INTEGER PRIMARY KEY, dir_id INTEGER, name TEXT, filename TEXT)");
+    success &= query.exec("CREATE TABLE IF NOT EXISTS samples (id INTEGER PRIMARY KEY, dir_id INTEGER, name TEXT, filename TEXT, UNIQUE (dir_id, name))");
     return success;
 }
 
@@ -61,6 +65,16 @@ bool Database::addFile(QFile const& file)
         id = query.lastInsertId().toInt();
     }
 
+    // Get the relevant parent for this file
+    query.prepare("SELECT id FROM dirs WHERE path = ?");
+    query.addBindValue(fileInfo.dir().absolutePath());
+    query.exec();
+    if (query.next()) {
+        id = query.value(0).toInt();
+    } else {
+        return false;
+    }
+
     // Add a new sample record
     query.prepare("INSERT INTO samples (dir_id, name, filename) VALUES (?,?,?)");
     query.addBindValue(id);
@@ -79,6 +93,18 @@ bool Database::removeFile(QFile const& file)
 {
     qDebug() << __FUNCSIG__;
     qDebug() << file.fileName();
+
+    // Remove based on filename AND location
+    auto fileInfo = QFileInfo(file);
+
+    QSqlQuery query;
+    query.prepare("DELETE FROM samples WHERE filename = ? AND dir_id IN (SELECT id FROM dirs WHERE path = ?)");
+    query.addBindValue(fileInfo.fileName());
+    query.addBindValue(fileInfo.dir().absolutePath());
+    query.exec();
+
+    qDebug() << query.executedQuery();
+
     return true;
 }
 
@@ -176,3 +202,44 @@ QList<Sample> Database::getSamples(QList<QDir> const* filterDirs) const
 
     return samples;
 }
+
+// Remove any orphaned dirs (dirs with no samples in them)
+void Database::cleanup()
+{
+    QSqlQuery query;
+
+    // We'll break out when there's no longer any empty leaf directories
+    for (;;) {
+
+        // Leaf directories (they are not a parent to anybody/they have no children)
+        QSet<int> leaves;
+
+        query.exec("SELECT dirs_left.id FROM dirs AS dirs_left LEFT JOIN dirs AS dirs_right ON dirs_left.id = dirs_right.parent_id WHERE dirs_right.id IS NULL GROUP BY dirs_left.id");
+        while (query.next()) {
+            leaves << query.value(0).toInt();
+        }
+        qDebug() << leaves;
+
+        // Directories with no samples
+        QSet<int> empties;
+        query.exec("SELECT dirs.id FROM dirs LEFT JOIN samples ON samples.dir_id = dirs.id WHERE samples.id IS NULL");
+        while (query.next()) {
+            empties << query.value(0).toInt();
+        }
+        qDebug() << empties;
+
+        QSet<int> toDelete = leaves.intersect(empties);
+        qDebug() << toDelete;
+
+        if (toDelete.empty()) {
+            break;
+        }
+
+        for (auto deleteId : toDelete) {
+            query.prepare("DELETE FROM dirs WHERE id = ?");
+            query.addBindValue(deleteId);
+            query.exec();
+        }
+    }
+}
+

@@ -1,19 +1,19 @@
 #ifndef COMMAND_ADDFILE_H
 #define COMMAND_ADDFILE_H
 
-#include "database.h"
 #include <QUndoCommand>
+#include "directories_model.h"
 
 class AddFile : public QUndoCommand
 {
 public:
-    AddFile(QString const& path, Database& db, QUndoCommand* parent = nullptr);
+    AddFile(QString const& path, DirectoriesModel& model, QUndoCommand* parent = nullptr);
     virtual void redo();
     virtual void undo();
 
 private:
     QString path;
-    Database& db;
+    DirectoriesModel& model;
 };
 
 #endif // COMMAND_ADDFILE_H

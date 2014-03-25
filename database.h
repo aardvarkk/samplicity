@@ -18,6 +18,9 @@ public:
     QList<QDir> getDirectoryChildren(QDir const* dir) const;
     QList<Sample> getSamples(QList<QDir> const* filterDirs = nullptr) const;
 
+    // Remove any orphaned dirs (dirs with no samples in them)
+    void cleanup();
+
 public slots:
     bool addFile(QFile const& file);
     bool removeFile(QFile const& file);

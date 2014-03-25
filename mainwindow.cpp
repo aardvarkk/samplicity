@@ -92,6 +92,6 @@ void MainWindow::on_actionAddFile_triggered()
 {
     QStringList files = QFileDialog::getOpenFileNames(this);
     for (auto f : files) {
-        undoStack->push(new AddFile(f, *db));
+        undoStack->push(new AddFile(f, *directoriesModel));
     }
 }

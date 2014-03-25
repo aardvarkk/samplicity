@@ -55,8 +55,6 @@ DirectoriesModel::DirectoriesModel(Database& db) : db(db), rootItem(nullptr)
     refresh();
 }
 
-// Our model depends upon our own internal data structure (not the database directly)
-// So whenever we change something about the database we need to refresh our internal representation
 void DirectoriesModel::refresh()
 {
     delete rootItem;
@@ -202,6 +200,8 @@ QVariant DirectoriesModel::headerData(int section, Qt::Orientation orientation,
 
 void DirectoriesModel::addDirectory(QString const& path)
 {
+    qDebug() << __FUNCSIG__;
+
     beginResetModel();
     db.addDirectory(path);
     refresh();
@@ -210,8 +210,32 @@ void DirectoriesModel::addDirectory(QString const& path)
 
 void DirectoriesModel::removeDirectory(QString const& path)
 {
+    qDebug() << __FUNCSIG__;
+
     beginResetModel();
     db.removeDirectory(path);
+    db.cleanup();
+    refresh();
+    endResetModel();
+}
+
+void DirectoriesModel::addFile(QString const& path)
+{
+    qDebug() << __FUNCSIG__;
+
+    beginResetModel();
+    db.addFile(path);
+    refresh();
+    endResetModel();
+}
+
+void DirectoriesModel::removeFile(QString const& path)
+{
+    qDebug() << __FUNCSIG__;
+
+    beginResetModel();
+    db.removeFile(path);
+    db.cleanup();
     refresh();
     endResetModel();
 }

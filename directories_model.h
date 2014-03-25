@@ -44,7 +44,12 @@ public:
 
     void addDirectory(QString const& path);
     void removeDirectory(QString const& path);
+    void addFile(QString const& path);
+    void removeFile(QString const& path);
 
+    // Our model depends upon our own internal data structure (not the database directly)
+    // So whenever we change something about the database we need to refresh our internal representation
+    // Load everything from database into rootItem
     void refresh();
 
 private:
