@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     command_add_file.cpp \
     samples_model.cpp \
     sample.cpp \
-    audio_player.cpp
+    audio_player.cpp \
+    settings.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
@@ -33,6 +34,7 @@ HEADERS  += mainwindow.h \
     command_add_file.h \
     samples_model.h \
     sample.h \
-    audio_player.h
+    audio_player.h \
+    settings.h
 
 FORMS    += mainwindow.ui

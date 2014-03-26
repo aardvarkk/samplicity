@@ -1,10 +1,11 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include "command_add_directory.h"
-#include "command_add_file.h"
 #include <QFileDialog>
 #include <QLayout>
 #include <QUndoView>
+
+#include "command_add_directory.h"
+#include "command_add_file.h"
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -12,9 +13,13 @@ MainWindow::MainWindow(QWidget *parent) :
     db(new Database("samplicity.db")),
     directoriesModel(new DirectoriesModel(*db)),
     samplesModel(new SamplesModel(*db)),
-    audioPlayer(new AudioPlayer)
+    audioPlayer(new AudioPlayer),
+    settings(Settings::getSettings())
 {
     ui->setupUi(this);
+
+    // Default settings
+    ui->actionLoop_Playback->setChecked(settings->value("loopPlayback", false).toBool());
 
     undoStack = new QUndoStack(this);
     // auto undoView = new QUndoView(undoStack);
@@ -112,4 +117,10 @@ void MainWindow::on_actionAddFile_triggered()
     for (auto f : files) {
         undoStack->push(new AddFile(f, *directoriesModel));
     }
+}
+
+void MainWindow::on_actionLoop_Playback_toggled(bool checked)
+{
+    settings->setValue("loopPlayback", checked);
+    audioPlayer->setLoop(checked);
 }

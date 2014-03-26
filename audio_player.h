@@ -8,14 +8,16 @@
 class AudioPlayer
 {
 public:
-    AudioPlayer();
+    AudioPlayer(bool loop = false);
 
     void play(QString const& path);
+    void setLoop(bool loop);
     void stop();
 
 private:
-    QMediaPlayer mediaPlayer;
+    QMediaPlayer* mediaPlayer;
     QSoundEffect* soundEffect;
+    bool loop;
 };
 
 #endif // AUDIO_PLAYER_H

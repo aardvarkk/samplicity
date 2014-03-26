@@ -4,7 +4,7 @@
 
 //#define MEDIAPLAYER
 
-AudioPlayer::AudioPlayer() : soundEffect(nullptr)
+AudioPlayer::AudioPlayer(bool loop) : mediaPlayer(nullptr), soundEffect(nullptr), loop(loop)
 {
 }
 
@@ -14,17 +14,16 @@ void AudioPlayer::play(QString const& path)
     qDebug() << path;
 
 #ifdef MEDIAPLAYER
-    if (mediaPlayer.state() != QMediaPlayer::StoppedState) {
-        return;
-    }
-
-    mediaPlayer.setMedia(QUrl::fromLocalFile(path));
-    mediaPlayer.play();
+    delete mediaPlayer;
+    mediaPlayer = new QMediaPlayer;
+    mediaPlayer->setMedia(QUrl::fromLocalFile(path));
+    mediaPlayer->play();
 #else
     // Must reset sound effect to deal with sample rate changes
     delete soundEffect;
     soundEffect = new QSoundEffect;
     soundEffect->setSource(QUrl::fromLocalFile(path));
+    setLoop(this->loop);
     soundEffect->play();
 #endif
 }
@@ -32,11 +31,22 @@ void AudioPlayer::play(QString const& path)
 void AudioPlayer::stop()
 {
 #ifdef MEDIAPLAYER
-    mediaPlayer.stop();
+    if (mediaPlayer) {
+        mediaPlayer->stop();
+    }
 #else
     if (soundEffect) {
         soundEffect->stop();
     }
 #endif
 }
+
+void AudioPlayer::setLoop(bool loop)
+{
+    this->loop = loop;
+    if (soundEffect) {
+        soundEffect->setLoopCount(this->loop ? QSoundEffect::Infinite : 0);
+    }
+}
+
 

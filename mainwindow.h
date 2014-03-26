@@ -7,6 +7,7 @@
 #include "database.h"
 #include "directories_model.h"
 #include "samples_model.h"
+#include "settings.h"
 
 namespace Ui {
 class MainWindow;
@@ -31,10 +32,13 @@ private slots:
 
     void on_samplesTreeViewSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected);
 
+    void on_actionLoop_Playback_toggled(bool arg1);
+
 private:
     void filterSamples();
 
-    Ui::MainWindow *ui;
+    QSettings* settings;
+    Ui::MainWindow* ui;
     Database* db;
     QUndoStack* undoStack;
     DirectoriesModel* directoriesModel;
