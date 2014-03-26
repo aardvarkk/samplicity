@@ -1,6 +1,8 @@
 #include <QString>
 #include <QtTest>
 
+#include "../database.h"
+
 class SamplicityTests : public QObject
 {
     Q_OBJECT
@@ -8,6 +10,8 @@ class SamplicityTests : public QObject
 private slots:
     void initTestCase()
     {
+        QDir().remove("test.db");
+        db = new Database("test.db");
     }
 
     void myFirstTest()
@@ -22,7 +26,11 @@ private slots:
 
     void cleanupTestCase()
     {
+        delete db;
     }
+
+private:
+    Database* db;
 };
 
 QTEST_APPLESS_MAIN(SamplicityTests)

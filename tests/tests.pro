@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += sql testlib
+QT       += core sql testlib
 
 QT       -= gui
 
@@ -15,6 +15,17 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 
+HEADERS += ../database.h \
+    ../filesystem.h \
+    ../sample.h \
+    ../utils.h
+
+
 SOURCES += \
-    samplicity_tests.cpp
+    samplicity_tests.cpp \
+    ../database.cpp \
+    ../filesystem.cpp \
+    ../sample.cpp \
+    ../utils.cpp
+
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
