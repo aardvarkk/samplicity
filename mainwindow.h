@@ -34,6 +34,8 @@ private slots:
 
     void on_actionLoop_Playback_toggled(bool arg1);
 
+    void on_actionTags_triggered();
+
 private:
     void filterSamples();
 

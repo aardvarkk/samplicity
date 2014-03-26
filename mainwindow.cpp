@@ -6,6 +6,7 @@
 #include "command_add_file.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "ui_edit_tags_dialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -25,8 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // auto undoView = new QUndoView(undoStack);
     // undoView->show();
 
-    ui->menuEdit->addAction(undoStack->createUndoAction(this));
-    ui->menuEdit->addAction(undoStack->createRedoAction(this));
+    ui->menuEdit->insertAction(ui->actionTags, undoStack->createUndoAction(this));
+    ui->menuEdit->insertAction(ui->actionTags, undoStack->createRedoAction(this));
 
     ui->dirsTreeView->setModel(directoriesModel);
 
@@ -123,4 +124,13 @@ void MainWindow::on_actionLoop_Playback_toggled(bool checked)
 {
     settings->setValue("loopPlayback", checked);
     audioPlayer->setLoop(checked);
+}
+
+void MainWindow::on_actionTags_triggered()
+{
+    qDebug() << __FUNCSIG__;
+
+    QDialog dialog;
+    Ui::EditTagsDialog().setupUi(&dialog);
+    dialog.exec();
 }

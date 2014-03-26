@@ -23,6 +23,9 @@
      </widget>
     </item>
     <item>
+     <widget class="QTreeView" name="tagsTreeView"/>
+    </item>
+    <item>
      <widget class="QTreeView" name="samplesTreeView"/>
     </item>
    </layout>
@@ -48,6 +51,7 @@
     <property name="title">
      <string>Edit</string>
     </property>
+    <addaction name="actionTags"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
@@ -89,6 +93,11 @@
    </property>
    <property name="text">
     <string>Loop Playback</string>
+   </property>
+  </action>
+  <action name="actionTags">
+   <property name="text">
+    <string>Tags...</string>
    </property>
   </action>
  </widget>
