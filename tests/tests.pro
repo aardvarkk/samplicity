@@ -18,6 +18,7 @@ TEMPLATE = app
 HEADERS += ../database.h \
     ../filesystem.h \
     ../sample.h \
+    ../tag.h \
     ../utils.h
 
 
@@ -26,6 +27,7 @@ SOURCES += \
     ../database.cpp \
     ../filesystem.cpp \
     ../sample.cpp \
+    ../tag.cpp \
     ../utils.cpp
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"

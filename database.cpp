@@ -21,6 +21,57 @@ Database::Database(QString const& filename)
     // cleanup();
 }
 
+void Database::addTag(QString const& name, int* parent_id)
+{
+    QSqlQuery query;
+    query.prepare("INSERT OR IGNORE INTO tags (name, parent_id) VALUES (?,?)");
+    query.addBindValue(name);
+    query.addBindValue(parent_id ? *parent_id : QVariant(QVariant::Int));
+    query.exec();
+}
+
+Tag Database::getTag(QString const& name, int parent_id)
+{
+    Tag tag;
+
+    QSqlQuery query;
+    if (parent_id > 0) {
+        query.prepare("SELECT id, parent_id, name FROM tags WHERE name = ? AND parent_id = ?");
+        query.addBindValue(name);
+        query.addBindValue(parent_id);
+    } else {
+        query.prepare("SELECT id, parent_id, name FROM tags WHERE name = ? AND parent_id IS NULL");
+        query.addBindValue(name);
+    }
+    query.exec();
+
+    while (query.next()) {
+        tag = Tag(
+            query.value(0).toInt(),
+            query.value(1).toInt(),
+            query.value(2).toString()
+            );
+    }
+    return tag;
+}
+
+QList<Tag> Database::getTags() const
+{
+    QList<Tag> tags;
+    QSqlQuery query;
+    query.exec("SELECT id, parent_id, name FROM tags");
+
+    while (query.next()) {
+        tags << Tag(
+            query.value(0).toInt(),
+            query.value(1).toInt(),
+            query.value(2).toString()
+                    );
+    }
+
+    return tags;
+}
+
 bool Database::createTables()
 {
     auto success = true;
@@ -198,14 +249,19 @@ QList<Sample> Database::getSamples(QList<QDir> const* filterDirs) const
         }
 
         // Get all matching samples
-        query.exec("SELECT name, path, filename FROM samples JOIN dirs ON samples.dir_id = dirs.id WHERE dir_id IN (" + ids.join(",") + ")");
+        query.exec("SELECT id, dir_id, name, filename, path FROM samples JOIN dirs ON samples.dir_id = dirs.id WHERE dir_id IN (" + ids.join(",") + ")");
     } else {
-        query.exec("SELECT name, path, filename FROM samples JOIN dirs ON samples.dir_id = dirs.id");
+        query.exec("SELECT id, dir_id, name, filename, path FROM samples JOIN dirs ON samples.dir_id = dirs.id");
     }
 
     while (query.next()) {
-        QString path = QDir(query.value(1).toString()).filePath(query.value(2).toString());
-        samples << Sample(query.value(0).toString(), path);
+        samples << Sample(
+            query.value(0).toInt(),
+            query.value(1).toInt(),
+            query.value(2).toString(),
+            query.value(3).toString(),
+            query.value(4).toString()
+            );
     }
 
     return samples;

@@ -61,7 +61,7 @@ void MainWindow::on_samplesTreeViewSelectionChanged(QModelIndex const& selected,
 {
     auto sample = samplesModel->getSample(selected);
     audioPlayer->stop();
-    audioPlayer->play(sample->path);
+    audioPlayer->play(sample->fullPath());
 }
 
 MainWindow::~MainWindow()

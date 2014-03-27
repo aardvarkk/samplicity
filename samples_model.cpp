@@ -63,7 +63,7 @@ QVariant SamplesModel::data(const QModelIndex &index, int role) const
 
     switch (role) {
     case Qt::DisplayRole:
-        return QVariant(sample->name);
+        return QVariant(sample->filename);
         break;
     case Qt::EditRole:
         return QVariant(sample->path);
