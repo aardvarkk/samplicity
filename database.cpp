@@ -21,12 +21,12 @@ Database::Database(QString const& filename)
     // cleanup();
 }
 
-void Database::addTag(QString const& name, int* parent_id)
+void Database::addTag(QString const& name, int parent_id)
 {
     QSqlQuery query;
     query.prepare("INSERT OR IGNORE INTO tags (name, parent_id) VALUES (?,?)");
     query.addBindValue(name);
-    query.addBindValue(parent_id ? *parent_id : QVariant(QVariant::Int));
+    query.addBindValue(parent_id > 0 ? parent_id : QVariant(QVariant::Int));
     query.exec();
 }
 
@@ -53,6 +53,36 @@ Tag Database::getTag(QString const& name, int parent_id)
             );
     }
     return tag;
+}
+
+Tag Database::getTag(int id)
+{
+    Tag tag;
+
+    QSqlQuery query;
+    query.prepare("SELECT parent_id, name FROM tags WHERE id = ?");
+    query.addBindValue(id);
+    query.exec();
+
+    while (query.next()) {
+        tag = Tag(
+            id,
+            query.value(0).toInt(),
+            query.value(1).toString()
+            );
+    }
+    return tag;
+}
+
+void Database::renameTag(Tag& tag, QString const& newName)
+{
+    QSqlQuery query;
+    query.prepare("UPDATE tags SET name=? WHERE id=?");
+    query.addBindValue(newName);
+    query.addBindValue(tag.id);
+    if (query.exec()) {
+        tag.name = newName;
+    }
 }
 
 QList<Tag> Database::getTags() const
@@ -111,7 +141,7 @@ bool Database::addFile(QFile const& file)
     while (it != parents.constBegin()) {
         --it;
         query.prepare("INSERT OR IGNORE INTO dirs (parent_id, path) VALUES (?,?)");
-        query.addBindValue(parent_id >= 0 ? parent_id : QVariant(QVariant::Int));
+        query.addBindValue(parent_id > 0 ? parent_id : QVariant(QVariant::Int));
         query.addBindValue(*it);
         query.exec();
 

@@ -32,13 +32,21 @@ private slots:
         QVERIFY(parent.id != 0);
 
         auto pre = db->getTags().length();
-        db->addTag("nuchiptune", &parent.id);
+        db->addTag("nuchiptune", parent.id);
         auto pst = db->getTags().length();
         QVERIFY(pst == pre + 1);
 
         auto tag = db->getTag("nuchiptune", db->getTag("chiptune", 0).id);
         QVERIFY(tag.parent_id == db->getTag("chiptune", 0).id);
         QCOMPARE(tag.name, QString("nuchiptune"));
+    }
+
+    void renameTag()
+    {
+        auto tag = db->getTag(1);
+        QVERIFY(tag.name != QString("newName"));
+        db->renameTag(tag, "newName");
+        QVERIFY(tag.name == QString("newName"));
     }
 
     void mySecondTest()
