@@ -21,6 +21,68 @@ Database::Database(QString const& filename)
     // cleanup();
 }
 
+bool Database::createTables()
+{
+    auto success = true;
+    QSqlQuery query;
+    success &= query.exec("CREATE TABLE IF NOT EXISTS dirs (id INTEGER PRIMARY KEY, parent_id INTEGER, path TEXT UNIQUE)");
+    success &= query.exec("CREATE TABLE IF NOT EXISTS samples (id INTEGER PRIMARY KEY, dir_id INTEGER, name TEXT, filename TEXT, UNIQUE (dir_id, name))");
+    success &= query.exec("CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY, parent_id INTEGER, name TEXT, UNIQUE (parent_id, name))");
+    success &= query.exec("CREATE TABLE IF NOT EXISTS sample_tags (id INTEGER PRIMARY KEY, sample_id INTEGER, tag_id INTEGER, UNIQUE (sample_id, tag_id))");
+    return success;
+}
+
+Sample Database::getSample(QFile const& file)
+{
+    Sample sample;
+
+    auto fileInfo = QFileInfo(file);
+
+    QSqlQuery query;
+    query.prepare("SELECT samples.id, samples.dir_id, samples.name, samples.filename, dirs.path FROM samples JOIN dirs ON samples.dir_id = dirs.id WHERE samples.filename = ? AND dirs.path = ?");
+    query.addBindValue(fileInfo.fileName());
+    query.addBindValue(fileInfo.dir().absolutePath());
+    query.exec();
+    while (query.next()) {
+        sample = Sample(
+                    query.value(0).toInt(),
+                    query.value(1).toInt(),
+                    query.value(2).toString(),
+                    query.value(3).toString(),
+                    query.value(4).toString()
+                    );
+    }
+
+    return sample;
+}
+
+bool Database::addSampleTag(Sample const& sample, Tag const& tag)
+{
+    QSqlQuery query;
+    query.prepare("INSERT OR IGNORE INTO sample_tags (sample_id, tag_id) VALUES (?,?)");
+    query.addBindValue(sample.id);
+    query.addBindValue(tag.id);
+    return query.exec();
+}
+
+QList<Tag> Database::getSampleTags(Sample const& sample)
+{
+    QList<Tag> tags;
+    QSqlQuery query;
+    query.prepare("SELECT tags.id, tags.parent_id, tags.name FROM (samples JOIN sample_tags ON samples.id = sample_tags.sample_id) JOIN tags ON sample_tags.tag_id = tags.id  WHERE samples.id = ?");
+    query.addBindValue(sample.id);
+    query.exec();
+    while (query.next()) {
+        tags << Tag(
+                    query.value(0).toInt(),
+                    query.value(1).toInt(),
+                    query.value(2).toString()
+                    );
+    }
+
+    return tags;
+}
+
 Tag Database::addTag(QString const& name, int parent_id)
 {
     Tag added;
@@ -167,16 +229,6 @@ bool Database::reparentTag(Tag& tag, int parent_id)
     }
 
     return false;
-}
-
-bool Database::createTables()
-{
-    auto success = true;
-    QSqlQuery query;
-    success &= query.exec("CREATE TABLE IF NOT EXISTS dirs (id INTEGER PRIMARY KEY, parent_id INTEGER, path TEXT UNIQUE)");
-    success &= query.exec("CREATE TABLE IF NOT EXISTS samples (id INTEGER PRIMARY KEY, dir_id INTEGER, name TEXT, filename TEXT, UNIQUE (dir_id, name))");
-    success &= query.exec("CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY, parent_id INTEGER, name TEXT, UNIQUE (parent_id, name))");
-    return success;
 }
 
 bool Database::addFile(QFile const& file)

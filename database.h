@@ -19,6 +19,10 @@ public:
     QList<QDir> getDirectoryChildren(QDir const* dir) const;
     QList<Sample> getSamples(QList<QDir> const* filterDirs = nullptr) const;
 
+    Sample getSample(QFile const& file);
+    bool addSampleTag(Sample const& sample, Tag const& tag);
+    QList<Tag> getSampleTags(Sample const& sample);
+
     Tag addTag(QString const& name, int parent_id = 0);
     // We need a parent ID because it's the combination of name and parent that defines a tag
     // Can have the same named tag sitting under different parents ("high" under "lead" and "high" under "pad")

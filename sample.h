@@ -6,6 +6,7 @@
 struct Sample
 {
 public:
+    Sample();
     Sample(int id, int dir_id, QString const& name, QString const& filename, QString const& path);
     int id;
     int dir_id;

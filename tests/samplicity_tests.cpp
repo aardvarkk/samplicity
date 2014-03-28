@@ -69,9 +69,37 @@ private slots:
         QVERIFY(!db->reparentTag(parent, child.id));
     }
 
-    void mySecondTest()
+    void tagSample()
     {
-        QVERIFY(1 != 2);
+        // Create a file to add
+        QFile fake("fake.wav");
+        db->addFile(fake);
+        auto sample = db->getSample(fake);
+        QVERIFY(sample.id > 0);
+        QVERIFY(sample.filename == "fake.wav");
+        QVERIFY(sample.name == "fake.wav");
+
+        auto tag = db->addTag("awesome stuff");
+        QVERIFY(db->addSampleTag(sample, tag));
+        QVERIFY(db->getSampleTags(sample).first().name == "awesome stuff");
+
+        auto secondTag = db->addTag("seriously awesome stuff", tag.id);
+        QVERIFY(db->addSampleTag(sample, secondTag));
+        QVERIFY(db->getSampleTags(sample).length() == 2);
+    }
+
+    void removeTag()
+    {
+        // Should remove the tag and untag all samples
+//        auto added = db->addTag("delete me");
+//        getTag
+    }
+
+    void removeParentTag()
+    {
+        // Should remove all of its children and untag all samples
+//        auto added = db->addTag("delete me");
+//        getTag
     }
 
     void cleanupTestCase()
