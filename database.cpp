@@ -65,6 +65,15 @@ bool Database::addSampleTag(Sample const& sample, Tag const& tag)
     return query.exec();
 }
 
+bool Database::removeSampleTag(Sample const& sample, Tag const& tag)
+{
+    QSqlQuery query;
+    query.prepare("DELETE FROM sample_tags WHERE sample_id = ? AND tag_id = ?");
+    query.addBindValue(sample.id);
+    query.addBindValue(tag.id);
+    return query.exec();
+}
+
 QList<Tag> Database::getSampleTags(Sample const& sample)
 {
     QList<Tag> tags;
@@ -189,6 +198,16 @@ QList<Tag> Database::getTagChildren(Tag const& parent)
     return tags;
 }
 
+QList<Tag> Database::getTagDescendants(Tag const& parent)
+{
+    QList<Tag> descendants;
+    descendants << getTagChildren(parent);
+    for (auto c : getTagChildren(parent)) {
+        descendants << getTagDescendants(c);
+    }
+    return descendants;
+}
+
 QList<Tag> Database::getTagAncestors(Tag const& tag)
 {
     QList<Tag> ancestors;
@@ -201,6 +220,31 @@ QList<Tag> Database::getTagAncestors(Tag const& tag)
     }
 
     return ancestors;
+}
+
+bool Database::removeTag(Tag const& tag)
+{
+    bool success = true;
+
+    // Remove our child tags first, then ourselves
+    for (auto c : getTagChildren(tag)) {
+        success &= removeTag(c);
+    }
+
+    QSqlQuery query;
+
+    // Remove ourselves
+    // Untag everything relevant
+    query.prepare("DELETE FROM sample_tags WHERE tag_id = ?");
+    query.addBindValue(tag.id);
+    success &= query.exec();
+
+    // Remove the actual tag itself
+    query.prepare("DELETE FROM tags WHERE id = ?");
+    query.addBindValue(tag.id);
+    success &= query.exec();
+
+    return success;
 }
 
 bool Database::reparentTag(Tag& tag, int parent_id)

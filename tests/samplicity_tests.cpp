@@ -88,18 +88,47 @@ private slots:
         QVERIFY(db->getSampleTags(sample).length() == 2);
     }
 
-    void removeTag()
+    void removeSampleTag()
     {
-        // Should remove the tag and untag all samples
-//        auto added = db->addTag("delete me");
-//        getTag
+        // Should remove the tag from the given sample
+        QFile file("tagged.wav");
+        db->addFile(file);
+        auto sample = db->getSample(file);
+        auto tag = db->addTag("delete me");
+        db->addSampleTag(sample, tag);
+        QVERIFY(db->getSampleTags(sample).length() == 1);
+        QVERIFY(db->removeSampleTag(sample, tag));
+        QVERIFY(db->getSampleTags(sample).length() == 0);
     }
 
-    void removeParentTag()
+    void removeTag()
     {
-        // Should remove all of its children and untag all samples
-//        auto added = db->addTag("delete me");
-//        getTag
+        QFile f1("s1.wav");
+        QFile f2("s2.wav");
+        db->addFile(f1);
+        db->addFile(f2);
+        auto s1 = db->getSample(f1);
+        auto s2 = db->getSample(f2);
+
+        auto t0 = db->addTag("granny");
+        auto t1 = db->addTag("mommy", t0.id);
+        auto t2 = db->addTag("baby", t1.id);
+
+        QVERIFY(db->getTagChildren(t0).length() == 1);
+        QVERIFY(db->getTagDescendants(t0).length() == 2);
+        QVERIFY(db->getTagChildren(t1).length() == 1);
+
+        db->addSampleTag(s1, t1);
+        db->addSampleTag(s2, t2);
+
+        // Should remove the tag, all of its children, and untag all samples
+        auto pre = db->getTags().length();
+        db->removeTag(t1);
+        QVERIFY(db->getSampleTags(s1).length() == 0);
+        QVERIFY(db->getSampleTags(s2).length() == 0);
+        QVERIFY(db->getTags().length() == pre - 2);
+        QVERIFY(db->getTagChildren(t0).length() == 0);
+        QVERIFY(db->getTagDescendants(t0).length() == 0);
     }
 
     void cleanupTestCase()

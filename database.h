@@ -21,6 +21,7 @@ public:
 
     Sample getSample(QFile const& file);
     bool addSampleTag(Sample const& sample, Tag const& tag);
+    bool removeSampleTag(Sample const& sample, Tag const& tag);
     QList<Tag> getSampleTags(Sample const& sample);
 
     Tag addTag(QString const& name, int parent_id = 0);
@@ -31,8 +32,10 @@ public:
     void renameTag(Tag& tag, QString const& newName);
     QList<Tag> getTags() const;
     QList<Tag> getTagChildren(Tag const& parent);
+    QList<Tag> getTagDescendants(Tag const& parent);
     bool reparentTag(Tag& tag, int parent_id);
     QList<Tag> getTagAncestors(Tag const& tag);
+    bool removeTag(Tag const& tag);
 
     // Remove any orphaned dirs (dirs with no samples in them)
     void cleanup();
