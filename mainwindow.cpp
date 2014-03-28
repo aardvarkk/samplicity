@@ -6,7 +6,7 @@
 #include "command_add_file.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "ui_edit_tags_dialog.h"
+#include "edit_tags_dialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     db(new Database("samplicity.db")),
     directoriesModel(new DirectoriesModel(*db)),
     samplesModel(new SamplesModel(*db)),
+    tagsModel(new TagsModel(*db)),
     audioPlayer(new AudioPlayer),
     settings(Settings::getSettings())
 {
@@ -55,6 +56,8 @@ MainWindow::MainWindow(QWidget *parent) :
         this,
         SLOT(on_samplesTreeViewSelectionChanged(QModelIndex, QModelIndex))
         );
+
+    ui->tagsTreeView->setModel(tagsModel);
 }
 
 void MainWindow::on_samplesTreeViewSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected)
@@ -130,7 +133,6 @@ void MainWindow::on_actionTags_triggered()
 {
     qDebug() << __FUNCSIG__;
 
-    QDialog dialog;
-    Ui::EditTagsDialog().setupUi(&dialog);
+    EditTagsDialog dialog(*db, this);
     dialog.exec();
 }

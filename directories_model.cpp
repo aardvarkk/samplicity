@@ -180,14 +180,6 @@ QVariant DirectoriesModel::data(const QModelIndex &index, int role) const
     return dir.dirName().length() <= 0 ? dir.absolutePath() : dir.dirName();
 }
 
-Qt::ItemFlags DirectoriesModel::flags(const QModelIndex &index) const
-{
-    if (!index.isValid())
-        return 0;
-
-    return QAbstractItemModel::flags(index);
-}
-
 QVariant DirectoriesModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
 {

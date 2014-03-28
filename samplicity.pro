@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     audio_player.cpp \
     settings.cpp \
     edit_tags_dialog.cpp \
-    tag.cpp
+    tag.cpp \
+    tags_model.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
@@ -39,7 +40,8 @@ HEADERS  += mainwindow.h \
     audio_player.h \
     settings.h \
     edit_tags_dialog.h \
-    tag.h
+    tag.h \
+    tags_model.h
 
 FORMS    += mainwindow.ui \
     edit_tags_dialog.ui

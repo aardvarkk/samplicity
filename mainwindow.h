@@ -7,6 +7,7 @@
 #include "database.h"
 #include "directories_model.h"
 #include "samples_model.h"
+#include "tags_model.h"
 #include "settings.h"
 
 namespace Ui {
@@ -44,6 +45,7 @@ private:
     Database* db;
     QUndoStack* undoStack;
     DirectoriesModel* directoriesModel;
+    TagsModel* tagsModel;
     SamplesModel* samplesModel;
     AudioPlayer* audioPlayer;
 };
