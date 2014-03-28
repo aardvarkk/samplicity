@@ -31,11 +31,13 @@ public:
     Tag getTag(int id);
     void renameTag(Tag& tag, QString const& newName);
     QList<Tag> getTags() const;
-    QList<Tag> getTagChildren(Tag const& parent);
+    QList<Tag> getTagChildren(int parent_id = 0);
     QList<Tag> getTagDescendants(Tag const& parent);
     bool reparentTag(Tag& tag, int parent_id);
     QList<Tag> getTagAncestors(Tag const& tag);
     bool removeTag(Tag const& tag);
+    Tag getTagChild(Tag const& parent, int index);
+    int getTagChildIndex(Tag const& child);
 
     // Remove any orphaned dirs (dirs with no samples in them)
     void cleanup();

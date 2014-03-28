@@ -179,12 +179,16 @@ QList<Tag> Database::getTags() const
     return tags;
 }
 
-QList<Tag> Database::getTagChildren(Tag const& parent)
+QList<Tag> Database::getTagChildren(int parent_id)
 {
     QList<Tag> tags;
     QSqlQuery query;
-    query.prepare("SELECT id, parent_id, name FROM tags WHERE parent_id = ?");
-    query.addBindValue(parent.id);
+    if (parent_id > 0) {
+        query.prepare("SELECT id, parent_id, name FROM tags WHERE parent_id = ?");
+        query.addBindValue(parent_id);
+    } else {
+        query.prepare("SELECT id, parent_id, name FROM tags WHERE parent_id IS NULL");
+    }
     query.exec();
 
     while (query.next()) {
@@ -201,8 +205,8 @@ QList<Tag> Database::getTagChildren(Tag const& parent)
 QList<Tag> Database::getTagDescendants(Tag const& parent)
 {
     QList<Tag> descendants;
-    descendants << getTagChildren(parent);
-    for (auto c : getTagChildren(parent)) {
+    descendants << getTagChildren(parent.id);
+    for (auto c : getTagChildren(parent.id)) {
         descendants << getTagDescendants(c);
     }
     return descendants;
@@ -227,7 +231,7 @@ bool Database::removeTag(Tag const& tag)
     bool success = true;
 
     // Remove our child tags first, then ourselves
-    for (auto c : getTagChildren(tag)) {
+    for (auto c : getTagChildren(tag.id)) {
         success &= removeTag(c);
     }
 
@@ -245,6 +249,42 @@ bool Database::removeTag(Tag const& tag)
     success &= query.exec();
 
     return success;
+}
+
+Tag Database::getTagChild(Tag const& parent, int index)
+{
+    Tag tag;
+
+    QSqlQuery query;
+    query.prepare("SELECT id, parent_id, name FROM tags WHERE parent_id = ?");
+    query.addBindValue(parent.id);
+    query.exec();
+    while (query.next()) {
+        if (index-- == 0) {
+            tag = Tag(
+                        query.value(0).toInt(),
+                        query.value(1).toInt(),
+                        query.value(2).toString());
+        }
+    }
+
+    return tag;
+}
+
+int Database::getTagChildIndex(Tag const& child)
+{
+    QSqlQuery query;
+    query.prepare("SELECT id FROM tags WHERE parent_id = ?");
+    query.addBindValue(child.parent_id);
+    query.exec();
+    int index = 0;
+    while (query.next()) {
+        if (query.value(0).toInt() == child.id) {
+            break;
+        }
+        ++index;
+    }
+    return index;
 }
 
 bool Database::reparentTag(Tag& tag, int parent_id)

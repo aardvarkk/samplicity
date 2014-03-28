@@ -24,6 +24,8 @@ private slots:
         auto tag = db->getTag("chiptune", 0);
         QCOMPARE(tag.name, QString("chiptune"));
         QVERIFY(tag.parent_id == 0);
+
+        QVERIFY(db->getTagChildren(0).length() == 1);
     }
 
     void addChildTag()
@@ -53,7 +55,7 @@ private slots:
     {
         // Switch role of child and parent
         auto parent = db->getTag(1);
-        auto children = db->getTagChildren(parent);
+        auto children = db->getTagChildren(parent.id);
         QVERIFY(children.length() > 0);
         auto child = children.first();
         QVERIFY(db->reparentTag(child, 0));
@@ -114,9 +116,9 @@ private slots:
         auto t1 = db->addTag("mommy", t0.id);
         auto t2 = db->addTag("baby", t1.id);
 
-        QVERIFY(db->getTagChildren(t0).length() == 1);
+        QVERIFY(db->getTagChildren(t0.id).length() == 1);
         QVERIFY(db->getTagDescendants(t0).length() == 2);
-        QVERIFY(db->getTagChildren(t1).length() == 1);
+        QVERIFY(db->getTagChildren(t1.id).length() == 1);
 
         db->addSampleTag(s1, t1);
         db->addSampleTag(s2, t2);
@@ -127,8 +129,20 @@ private slots:
         QVERIFY(db->getSampleTags(s1).length() == 0);
         QVERIFY(db->getSampleTags(s2).length() == 0);
         QVERIFY(db->getTags().length() == pre - 2);
-        QVERIFY(db->getTagChildren(t0).length() == 0);
+        QVERIFY(db->getTagChildren(t0.id).length() == 0);
         QVERIFY(db->getTagDescendants(t0).length() == 0);
+    }
+
+    void tagChild()
+    {
+        auto daddy = db->addTag("daddy");
+        auto k1 = db->addTag("kiddy1", daddy.id);
+        auto k2 = db->addTag("kiddy2", daddy.id);
+        QVERIFY(db->getTagChild(daddy, 0).id == k1.id);
+        QVERIFY(db->getTagChild(daddy, 1).id == k2.id);
+
+        QVERIFY(db->getTagChildIndex(k1) == 0);
+        QVERIFY(db->getTagChildIndex(k2) == 1);
     }
 
     void cleanupTestCase()
