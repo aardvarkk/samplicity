@@ -21,13 +21,19 @@ Database::Database(QString const& filename)
     // cleanup();
 }
 
-void Database::addTag(QString const& name, int parent_id)
+Tag Database::addTag(QString const& name, int parent_id)
 {
+    Tag added;
+
     QSqlQuery query;
     query.prepare("INSERT OR IGNORE INTO tags (name, parent_id) VALUES (?,?)");
     query.addBindValue(name);
     query.addBindValue(parent_id > 0 ? parent_id : QVariant(QVariant::Int));
-    query.exec();
+    if (query.exec()) {
+        return added = getTag(name, parent_id);
+    }
+
+    return added;
 }
 
 Tag Database::getTag(QString const& name, int parent_id)
@@ -77,7 +83,7 @@ Tag Database::getTag(int id)
 void Database::renameTag(Tag& tag, QString const& newName)
 {
     QSqlQuery query;
-    query.prepare("UPDATE tags SET name=? WHERE id=?");
+    query.prepare("UPDATE tags SET name = ? WHERE id = ?");
     query.addBindValue(newName);
     query.addBindValue(tag.id);
     if (query.exec()) {
@@ -100,6 +106,67 @@ QList<Tag> Database::getTags() const
     }
 
     return tags;
+}
+
+QList<Tag> Database::getTagChildren(Tag const& parent)
+{
+    QList<Tag> tags;
+    QSqlQuery query;
+    query.prepare("SELECT id, parent_id, name FROM tags WHERE parent_id = ?");
+    query.addBindValue(parent.id);
+    query.exec();
+
+    while (query.next()) {
+        tags << Tag(
+            query.value(0).toInt(),
+            query.value(1).toInt(),
+            query.value(2).toString()
+                    );
+    }
+
+    return tags;
+}
+
+QList<Tag> Database::getTagAncestors(Tag const& tag)
+{
+    QList<Tag> ancestors;
+
+    // Keep walking up the parent list and adding to ancestors
+    Tag check(tag);
+    while (check.parent_id > 0) {
+        check = getTag(check.parent_id);
+        ancestors << check;
+    }
+
+    return ancestors;
+}
+
+bool Database::reparentTag(Tag& tag, int parent_id)
+{
+    // Check if the tag given is a parent of the tag with the given parent_id
+    // If so, this is invalid as it will create a circular reference
+    auto parent = getTag(parent_id);
+    auto ancestors = getTagAncestors(parent);
+
+    // Make sure our tag is not in the ancestors list of the supposed new parent
+    for (auto a : ancestors) {
+        if (a.id == tag.id) {
+            return false;
+        }
+    }
+
+    // Update it!
+    // If parent_id is 0, we want to set a null parent
+    QSqlQuery query;
+    query.prepare("UPDATE tags SET parent_id = ? WHERE id = ?");
+    query.addBindValue(parent_id > 0 ? parent_id : QVariant(QVariant::Int));
+    query.addBindValue(tag.id);
+    if (query.exec()) {
+        tag.parent_id = parent_id;
+        return true;
+    }
+
+    return false;
 }
 
 bool Database::createTables()

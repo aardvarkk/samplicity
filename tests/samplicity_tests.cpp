@@ -49,6 +49,26 @@ private slots:
         QVERIFY(tag.name == QString("newName"));
     }
 
+    void reparentTag()
+    {
+        // Switch role of child and parent
+        auto parent = db->getTag(1);
+        auto children = db->getTagChildren(parent);
+        QVERIFY(children.length() > 0);
+        auto child = children.first();
+        QVERIFY(db->reparentTag(child, 0));
+        QVERIFY(child.parent_id == 0);
+        QVERIFY(db->reparentTag(parent, child.id));
+        QVERIFY(parent.parent_id == child.id);
+    }
+
+    void invalidReparentTag()
+    {
+        auto parent = db->addTag("parent");
+        auto child = db->addTag("child", parent.id);
+        QVERIFY(!db->reparentTag(parent, child.id));
+    }
+
     void mySecondTest()
     {
         QVERIFY(1 != 2);
