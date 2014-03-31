@@ -40,7 +40,7 @@ QModelIndex TagsModel::index(int row, int column, const QModelIndex &parent) con
         return createIndex(row, column, &w->children[row]);
     }
 
-    if (row < tags->children.count()) {
+    if (column == 0 && row >= 0 && row < tags->children.count()) {
         qDebug() << &tags->children[row];
         qDebug() << tags->children[row].tag.name;
         auto ptr = &tags->children[row];
@@ -96,7 +96,7 @@ QVariant TagsModel::data(const QModelIndex &index, int role) const
 {
     qDebug() << __FUNCSIG__;
 
-    if (!index.isValid()) {
+    if (!index.isValid() || role != Qt::DisplayRole) {
         qDebug() << QVariant();
         return QVariant();
     }
