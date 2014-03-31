@@ -45,3 +45,5 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     edit_tags_dialog.ui
+
+include(./modeltest.pri)

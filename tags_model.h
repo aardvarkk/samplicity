@@ -4,11 +4,24 @@
 #include <QAbstractItemModel>
 
 #include "database.h"
+#include "tag.h"
+
+struct TagWrapper
+{
+    TagWrapper() : parent(nullptr), row(-1) {}
+    Tag tag;
+    TagWrapper* parent;
+    QVector<TagWrapper> children;
+    int row;
+};
 
 class TagsModel : public QAbstractItemModel
 {
 public:
     TagsModel(Database& db);
+    ~TagsModel();
+    void addTagWrappers(QList<Tag> const& tags, TagWrapper* parent);
+
 
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     virtual QModelIndex parent(const QModelIndex &index) const;
@@ -19,6 +32,7 @@ public:
 
 private:
     Database& db;
+    TagWrapper* tags;
 };
 
 #endif // TAGS_MODEL_H

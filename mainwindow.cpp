@@ -8,6 +8,8 @@
 #include "ui_mainwindow.h"
 #include "edit_tags_dialog.h"
 
+#include "modeltest.h"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -58,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
         );
 
     ui->tagsTreeView->setModel(tagsModel);
+    auto modelTest = new ModelTest(tagsModel, this);
 }
 
 void MainWindow::on_samplesTreeViewSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected)
