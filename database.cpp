@@ -482,9 +482,9 @@ QList<Sample> Database::getSamples(QList<QDir> const* filterDirs) const
         }
 
         // Get all matching samples
-        query.exec("SELECT id, dir_id, name, filename, path FROM samples JOIN dirs ON samples.dir_id = dirs.id WHERE dir_id IN (" + ids.join(",") + ")");
+        query.exec("SELECT samples.id, dir_id, name, filename, path FROM samples JOIN dirs ON samples.dir_id = dirs.id WHERE dir_id IN (" + ids.join(",") + ")");
     } else {
-        query.exec("SELECT id, dir_id, name, filename, path FROM samples JOIN dirs ON samples.dir_id = dirs.id");
+        query.exec("SELECT samples.id, dir_id, name, filename, path FROM samples JOIN dirs ON samples.dir_id = dirs.id");
     }
 
     while (query.next()) {

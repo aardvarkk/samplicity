@@ -6,6 +6,11 @@
 #include "database.h"
 #include "tag.h"
 
+class TagSelectionModel : public QItemSelectionModel
+{
+
+};
+
 struct TagWrapper
 {
     TagWrapper() : parent(nullptr), row(-1) {}

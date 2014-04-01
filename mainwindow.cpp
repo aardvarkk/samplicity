@@ -43,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
         );
 
     ui->samplesTreeView->setModel(samplesModel);
+    // auto modelTest = new ModelTest(samplesModel, this);
 
     // Make it such that when any directories/files are added or changed,
     // the samples view is refreshed
@@ -60,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
         );
 
     ui->tagsTreeView->setModel(tagsModel);
-    auto modelTest = new ModelTest(tagsModel, this);
+    // auto modelTest = new ModelTest(tagsModel, this);
 }
 
 void MainWindow::on_samplesTreeViewSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected)

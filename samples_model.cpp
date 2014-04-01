@@ -7,8 +7,6 @@ SamplesModel::SamplesModel(Database const& db) : db(db)
 
 void SamplesModel::refresh()
 {
-    qDebug() << __FUNCSIG__;
-
     setSamples(&db.getSamples(nullptr));
 }
 
@@ -51,7 +49,7 @@ QModelIndex SamplesModel::index(int row, int column, const QModelIndex &parent) 
 
 int SamplesModel::rowCount(const QModelIndex &parent) const
 {
-    return items.count();
+    return parent.isValid() ? 0 : items.count();
 }
 
 QVariant SamplesModel::data(const QModelIndex &index, int role) const
@@ -84,8 +82,5 @@ QVariant SamplesModel::headerData(int section, Qt::Orientation orientation, int 
 
 void SamplesModel::setFilterDirs(QList<QDir> const& filterDirs)
 {
-    qDebug() << __FUNCSIG__;
-    qDebug() << filterDirs;
-
     setSamples(&db.getSamples(&filterDirs));
 }
