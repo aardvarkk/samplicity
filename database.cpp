@@ -468,7 +468,7 @@ QList<Sample> Database::getSamples(QList<QDir> const* filterDirs) const
     QList<Sample> samples;
     QSqlQuery query;
 
-    if (filterDirs) {
+    if (filterDirs && !filterDirs->empty()) {
         // Create a list of all IDs that would be valid parents for samples based on given dirs
         QStringList ids;
         for (auto filterDir : *filterDirs) {

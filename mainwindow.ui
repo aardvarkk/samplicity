@@ -23,7 +23,11 @@
      </widget>
     </item>
     <item>
-     <widget class="QTreeView" name="tagsTreeView"/>
+     <widget class="QTreeView" name="tagsTreeView">
+      <property name="selectionMode">
+       <enum>QAbstractItemView::ExtendedSelection</enum>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QTreeView" name="samplesTreeView"/>

@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     settings.cpp \
     edit_tags_dialog.cpp \
     tag.cpp \
-    tags_model.cpp
+    tags_model.cpp \
+    deselectable_tree_view.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
@@ -41,7 +42,8 @@ HEADERS  += mainwindow.h \
     settings.h \
     edit_tags_dialog.h \
     tag.h \
-    tags_model.h
+    tags_model.h \
+    deselectable_tree_view.h
 
 FORMS    += mainwindow.ui \
     edit_tags_dialog.ui

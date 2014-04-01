@@ -93,9 +93,6 @@ void MainWindow::filterSamples()
         }
     }
 
-    qDebug() << __FUNCSIG__;
-    qDebug() << selectedDirs;
-
     samplesModel->setFilterDirs(selectedDirs);
 }
 
