@@ -19,3 +19,9 @@ void DeselectableTreeView::mousePressEvent(QMouseEvent *event)
         selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select);
     }
 }
+
+void DeselectableTreeView::reset()
+{
+    QAbstractItemView::reset();
+    expandAll();
+}

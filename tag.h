@@ -11,6 +11,8 @@ public:
     int id;
     int parent_id;
     QString name;
+
+    bool valid();
 };
 
 #endif // TAG_H

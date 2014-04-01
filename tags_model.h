@@ -6,11 +6,6 @@
 #include "database.h"
 #include "tag.h"
 
-class TagSelectionModel : public QItemSelectionModel
-{
-
-};
-
 struct TagWrapper
 {
     TagWrapper() : parent(nullptr), row(-1) {}
@@ -25,8 +20,8 @@ class TagsModel : public QAbstractItemModel
 public:
     TagsModel(Database& db);
     ~TagsModel();
-    void addTagWrappers(QList<Tag> const& tags, TagWrapper* parent);
-
+    bool addTag(QString const& name, int parent_id = 0);
+    void refresh();
 
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     virtual QModelIndex parent(const QModelIndex &index) const;
@@ -36,6 +31,8 @@ public:
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
 private:
+    void addTagWrappers(QList<Tag> const& tags, TagWrapper* parent);
+
     Database& db;
     TagWrapper* tags;
 };

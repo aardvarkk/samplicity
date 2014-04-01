@@ -13,7 +13,6 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
     database.cpp \
     filesystem.cpp \
     utils.cpp \
@@ -27,9 +26,11 @@ SOURCES += main.cpp\
     edit_tags_dialog.cpp \
     tag.cpp \
     tags_model.cpp \
-    deselectable_tree_view.cpp
+    deselectable_tree_view.cpp \
+    main_window.cpp \
+    add_tag_dialog.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     database.h \
     filesystem.h \
     utils.h \
@@ -43,9 +44,13 @@ HEADERS  += mainwindow.h \
     edit_tags_dialog.h \
     tag.h \
     tags_model.h \
-    deselectable_tree_view.h
+    deselectable_tree_view.h \
+    main_window.h \
+    add_tag_dialog.h
 
-FORMS    += mainwindow.ui \
-    edit_tags_dialog.ui
+FORMS    += \
+    edit_tags_dialog.ui \
+    main_window.ui \
+    add_tag_dialog.ui
 
 include(./modeltest.pri)

@@ -20,14 +20,32 @@ void TagsModel::addTagWrappers(QList<Tag> const& tags, TagWrapper* parent)
 TagsModel::TagsModel(Database& db) : db(db)
 {
     tags = new TagWrapper;
-
-    // Create our tree structure from the database
-    addTagWrappers(db.getTagChildren(), this->tags);
+    refresh();
 }
 
 TagsModel::~TagsModel()
 {
     delete tags;
+}
+
+void TagsModel::refresh()
+{
+    // Create our tree structure from the database
+    this->tags->children.clear();
+    addTagWrappers(db.getTagChildren(), this->tags);
+}
+
+bool TagsModel::addTag(QString const& name, int parent_id)
+{
+    auto tag = db.addTag(name, parent_id);
+    if (tag.valid()) {
+        beginResetModel();
+        refresh();
+        endResetModel();
+        return true;
+    }
+
+    return false;
 }
 
 QModelIndex TagsModel::index(int row, int column, const QModelIndex &parent) const

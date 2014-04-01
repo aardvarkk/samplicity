@@ -10,3 +10,8 @@ Tag::Tag(int id, int parent_id, QString const& name) :
     name(name)
 {
 }
+
+bool Tag::valid()
+{
+    return (id >= 0) && (parent_id >= 0);
+}

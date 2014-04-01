@@ -12,6 +12,9 @@ public:
     DeselectableTreeView(QWidget* parent = 0);
     virtual ~DeselectableTreeView() {}
 
+protected:
+    virtual void reset();
+
 private:
     virtual void mousePressEvent(QMouseEvent *event);
 };

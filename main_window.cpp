@@ -4,7 +4,7 @@
 
 #include "command_add_directory.h"
 #include "command_add_file.h"
-#include "mainwindow.h"
+#include "main_window.h"
 #include "ui_mainwindow.h"
 #include "edit_tags_dialog.h"
 
@@ -132,8 +132,6 @@ void MainWindow::on_actionLoop_Playback_toggled(bool checked)
 
 void MainWindow::on_actionTags_triggered()
 {
-    qDebug() << __FUNCSIG__;
-
     EditTagsDialog dialog(*db, this);
     dialog.exec();
 }
