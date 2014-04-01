@@ -32,19 +32,12 @@ TagsModel::~TagsModel()
 
 QModelIndex TagsModel::index(int row, int column, const QModelIndex &parent) const
 {
-    qDebug() << __FUNCSIG__;
-    qDebug() << row << column << parent;
-
     if (parent.isValid()) {
-        auto w = static_cast<TagWrapper*>(parent.internalPointer());
-        return createIndex(row, column, &w->children[row]);
+        return createIndex(row, column, &static_cast<TagWrapper*>(parent.internalPointer())->children[row]);
     }
 
     if (column == 0 && row >= 0 && row < tags->children.count()) {
-        qDebug() << &tags->children[row];
-        qDebug() << tags->children[row].tag.name;
-        auto ptr = &tags->children[row];
-        return createIndex(row, column, ptr);
+        return createIndex(row, column, &tags->children[row]);
     }
 
     return QModelIndex();
@@ -52,39 +45,17 @@ QModelIndex TagsModel::index(int row, int column, const QModelIndex &parent) con
 
 QModelIndex TagsModel::parent(const QModelIndex &index) const
 {
-    qDebug() << __FUNCSIG__;
-    qDebug() << index;
-
     if (!index.isValid()) {
-        qDebug() << QModelIndex();
         return QModelIndex();
     }
 
-    auto w = static_cast<TagWrapper*>(index.internalPointer());
-    auto parent = w->parent;
-
-    if (parent->row >= 0) {
-        qDebug() << createIndex(parent->row, 0, parent);
-        return createIndex(parent->row, 0, parent);
-    } else {
-        qDebug() << QModelIndex();
-        return QModelIndex();
-    }
+    auto parent = static_cast<TagWrapper*>(index.internalPointer())->parent;
+    return parent->row >= 0 ? createIndex(parent->row, 0, parent) : QModelIndex();
 }
 
 int TagsModel::rowCount(const QModelIndex &parent) const
 {
-    qDebug() << __FUNCSIG__;
-    qDebug() << parent;
-
-    if (!parent.isValid()) {
-        qDebug() << tags->children.count();
-        return tags->children.count();
-    } else {
-        auto w = static_cast<TagWrapper*>(parent.internalPointer());
-        qDebug() << w->children.count();
-        return w->children.count();
-    }
+    return parent.isValid() ? static_cast<TagWrapper*>(parent.internalPointer())->children.count() : tags->children.count();
 }
 
 int TagsModel::columnCount(const QModelIndex &parent) const
@@ -94,17 +65,11 @@ int TagsModel::columnCount(const QModelIndex &parent) const
 
 QVariant TagsModel::data(const QModelIndex &index, int role) const
 {
-    qDebug() << __FUNCSIG__;
-
     if (!index.isValid() || role != Qt::DisplayRole) {
-        qDebug() << QVariant();
         return QVariant();
     }
 
-    auto w = static_cast<TagWrapper*>(index.internalPointer());
-
-    qDebug() << w->tag.name;
-    return w->tag.name;
+    return static_cast<TagWrapper*>(index.internalPointer())->tag.name;
 }
 
 QVariant TagsModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -115,5 +80,3 @@ QVariant TagsModel::headerData(int section, Qt::Orientation orientation, int rol
 
     return QVariant();
 }
-
-
