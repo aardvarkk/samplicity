@@ -2,7 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSortFilterProxyModel>
 #include <QUndoStack>
+
 #include "audio_player.h"
 #include "database.h"
 #include "directories_model.h"
@@ -45,7 +47,10 @@ private:
     Database* db;
     QUndoStack* undoStack;
     DirectoriesModel* directoriesModel;
+
+    QSortFilterProxyModel tagsProxyModel;
     TagsModel* tagsModel;
+
     SamplesModel* samplesModel;
     AudioPlayer* audioPlayer;
 };

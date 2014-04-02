@@ -26,9 +26,9 @@ SOURCES += main.cpp\
     edit_tags_dialog.cpp \
     tag.cpp \
     tags_model.cpp \
-    deselectable_tree_view.cpp \
     main_window.cpp \
-    add_tag_dialog.cpp
+    line_edit_dialog.cpp \
+    expanding_tree_view.cpp
 
 HEADERS  += \
     database.h \
@@ -44,13 +44,13 @@ HEADERS  += \
     edit_tags_dialog.h \
     tag.h \
     tags_model.h \
-    deselectable_tree_view.h \
     main_window.h \
-    add_tag_dialog.h
+    line_edit_dialog.h \
+    expanding_tree_view.h
 
 FORMS    += \
     edit_tags_dialog.ui \
     main_window.ui \
-    add_tag_dialog.ui
+    line_edit_dialog.ui
 
 include(./modeltest.pri)

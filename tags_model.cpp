@@ -30,22 +30,38 @@ TagsModel::~TagsModel()
 
 void TagsModel::refresh()
 {
+    beginResetModel();
+
     // Create our tree structure from the database
     this->tags->children.clear();
     addTagWrappers(db.getTagChildren(), this->tags);
+
+    endResetModel();
 }
 
 bool TagsModel::addTag(QString const& name, int parent_id)
 {
     auto tag = db.addTag(name, parent_id);
     if (tag.valid()) {
-        beginResetModel();
         refresh();
-        endResetModel();
         return true;
     }
 
     return false;
+}
+
+bool TagsModel::removeTag(Tag const& tag)
+{
+    auto success = db.removeTag(tag);
+    refresh();
+    return success;
+}
+
+bool TagsModel::renameTag(Tag& tag, QString const& newName)
+{
+    auto success = db.renameTag(tag, newName);
+    refresh();
+    return success;
 }
 
 QModelIndex TagsModel::index(int row, int column, const QModelIndex &parent) const

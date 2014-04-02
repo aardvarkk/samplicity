@@ -21,6 +21,8 @@ public:
     TagsModel(Database& db);
     ~TagsModel();
     bool addTag(QString const& name, int parent_id = 0);
+    bool removeTag(Tag const& tag);
+    bool renameTag(Tag& tag, QString const& newName);
     void refresh();
 
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;

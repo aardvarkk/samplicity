@@ -61,6 +61,11 @@ MainWindow::MainWindow(QWidget *parent) :
         );
 
     ui->tagsTreeView->setModel(tagsModel);
+//    tagsProxyModel.setSourceModel(tagsModel);
+//    tagsProxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
+//    ui->tagsTreeView->setModel(&tagsProxyModel);
+//    ui->tagsTreeView->setSortingEnabled(true);
+//    tagsProxyModel.sort(0, Qt::AscendingOrder);
     // auto modelTest = new ModelTest(tagsModel, this);
 }
 
@@ -134,4 +139,5 @@ void MainWindow::on_actionTags_triggered()
 {
     EditTagsDialog dialog(*db, this);
     dialog.exec();
+    tagsModel->refresh();
 }

@@ -57,6 +57,8 @@ DirectoriesModel::DirectoriesModel(Database& db) : db(db), rootItem(nullptr)
 
 void DirectoriesModel::refresh()
 {
+    beginResetModel();
+
     delete rootItem;
     rootItem = nullptr;
 
@@ -64,6 +66,8 @@ void DirectoriesModel::refresh()
     rootData << tr("Directory");
     rootItem = new TreeItem(rootData);
     addTree(rootItem, db);
+
+    endResetModel();
 }
 
 void DirectoriesModel::addTree(TreeItem* parent, Database const& db)
@@ -194,40 +198,32 @@ void DirectoriesModel::addDirectory(QString const& path)
 {
     qDebug() << __FUNCSIG__;
 
-    beginResetModel();
     db.addDirectory(path);
     refresh();
-    endResetModel();
 }
 
 void DirectoriesModel::removeDirectory(QString const& path)
 {
     qDebug() << __FUNCSIG__;
 
-    beginResetModel();
     db.removeDirectory(path);
     db.cleanup();
     refresh();
-    endResetModel();
 }
 
 void DirectoriesModel::addFile(QString const& path)
 {
     qDebug() << __FUNCSIG__;
 
-    beginResetModel();
     db.addFile(path);
     refresh();
-    endResetModel();
 }
 
 void DirectoriesModel::removeFile(QString const& path)
 {
     qDebug() << __FUNCSIG__;
 
-    beginResetModel();
     db.removeFile(path);
     db.cleanup();
     refresh();
-    endResetModel();
 }

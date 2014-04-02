@@ -29,7 +29,7 @@ public:
     // Can have the same named tag sitting under different parents ("high" under "lead" and "high" under "pad")
     Tag getTag(QString const& name, int parent_id = 0);
     Tag getTag(int id);
-    void renameTag(Tag& tag, QString const& newName);
+    bool renameTag(Tag& tag, QString const& newName);
     QList<Tag> getTags() const;
     QList<Tag> getTagChildren(int parent_id = 0);
     QList<Tag> getTagDescendants(Tag const& parent);

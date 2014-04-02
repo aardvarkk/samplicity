@@ -151,7 +151,7 @@ Tag Database::getTag(int id)
     return tag;
 }
 
-void Database::renameTag(Tag& tag, QString const& newName)
+bool Database::renameTag(Tag& tag, QString const& newName)
 {
     QSqlQuery query;
     query.prepare("UPDATE tags SET name = ? WHERE id = ?");
@@ -159,7 +159,9 @@ void Database::renameTag(Tag& tag, QString const& newName)
     query.addBindValue(tag.id);
     if (query.exec()) {
         tag.name = newName;
+        return true;
     }
+    return false;
 }
 
 QList<Tag> Database::getTags() const
@@ -228,10 +230,13 @@ QList<Tag> Database::getTagAncestors(Tag const& tag)
 
 bool Database::removeTag(Tag const& tag)
 {
+    qDebug() << __FUNCSIG__;
+
     bool success = true;
 
     // Remove our child tags first, then ourselves
     for (auto c : getTagChildren(tag.id)) {
+//        qDebug() << "Remove child tag " << tag.id;
         success &= removeTag(c);
     }
 
@@ -242,6 +247,8 @@ bool Database::removeTag(Tag const& tag)
     query.prepare("DELETE FROM sample_tags WHERE tag_id = ?");
     query.addBindValue(tag.id);
     success &= query.exec();
+
+//    qDebug() << "Remove tag " << tag.id;
 
     // Remove the actual tag itself
     query.prepare("DELETE FROM tags WHERE id = ?");
