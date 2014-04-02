@@ -25,7 +25,7 @@ public:
     Sample const* getSample(QModelIndex const& index);
 
 public slots:
-    void refresh();
+    void reset();
 
 private:
     QList<Sample*> items;

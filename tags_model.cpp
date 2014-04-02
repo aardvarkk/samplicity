@@ -71,6 +71,16 @@ bool TagsModel::reparentTag(Tag& tag, int parent_id)
     return success;
 }
 
+bool TagsModel::addSampleTag(Sample const& sample, Tag const& tag)
+{
+    return db.addSampleTag(sample, tag);
+}
+
+bool TagsModel::removeSampleTag(Sample const& sample, Tag const& tag)
+{
+    return db.removeSampleTag(sample, tag);
+}
+
 QModelIndex TagsModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (parent.isValid()) {

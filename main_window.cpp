@@ -67,7 +67,7 @@ MainWindow::MainWindow(QWidget *parent) :
         directoriesModel,
         SIGNAL(modelReset()),
         samplesModel,
-        SLOT(refresh()));
+        SLOT(reset()));
 
     QObject::connect(
         ui->samplesTreeView->selectionModel(),
@@ -96,10 +96,53 @@ MainWindow::MainWindow(QWidget *parent) :
                 this,
                 SLOT(tagModeToggled(bool))
                 );
+
+    // When tags selections are changed, we need to apply/filter
+    QObject::connect(
+                ui->tagsTreeView->selectionModel(),
+                SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+                this,
+                SLOT(tagSelectionChanged(QItemSelection,QItemSelection))
+                );
+}
+
+void MainWindow::tagSelectionChanged(QItemSelection const& selected, QItemSelection const& deselected)
+{
+    qDebug() << __FUNCSIG__;
+
+    switch (settings->value("tagMode").toInt()) {
+        case TagMode::Apply:
+        {
+            auto selected_sample = ui->samplesTreeView->selectionModel()->selectedIndexes();
+            if (selected_sample.empty()) {
+                return;
+            }
+            auto sample = static_cast<Sample*>(selected_sample.last().internalPointer());
+            for (auto selRng : selected) {
+                for (auto idx : selRng.indexes()) {
+                    tagsModel->addSampleTag(*sample, static_cast<TagWrapper*>(idx.internalPointer())->tag);
+                }
+            }
+            for (auto selRng : deselected) {
+                for (auto idx : selRng.indexes()) {
+                    tagsModel->removeSampleTag(*sample, static_cast<TagWrapper*>(idx.internalPointer())->tag);
+                }
+            }
+        }
+        break;
+        case TagMode::Filter:
+        break;
+    }
 }
 
 void MainWindow::on_samplesTreeViewSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected)
 {
+    // If we're in "Apply" tag mode, we want to show the relevant tags for this sample
+    if (settings->value("tagMode").toInt() == TagMode::Apply) {
+        ui->tagsTreeView->selectionModel()->clearSelection();
+        // TODO: Add selections for each already-selected tag
+    }
+
     auto sample = samplesModel->getSample(selected);
     audioPlayer->stop();
     audioPlayer->play(sample->fullPath());
@@ -193,4 +236,7 @@ void MainWindow::tagModeToggled(bool checked)
 {
     qDebug() << __FUNCSIG__;
     settings->setValue("tagMode", ui->tagMode->checkedId());
+
+    // TODO: If switch from filter to apply, show tags for selected sample
+    // If switch from apply to filter, probably clear the tag selection
 }

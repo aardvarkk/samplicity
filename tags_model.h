@@ -24,6 +24,8 @@ public:
     bool removeTag(Tag const& tag);
     bool renameTag(Tag& tag, QString const& newName);
     bool reparentTag(Tag& tag, int parent_id);
+    bool addSampleTag(Sample const& sample, Tag const& tag);
+    bool removeSampleTag(Sample const& sample, Tag const& tag);
     void refresh();
 
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;

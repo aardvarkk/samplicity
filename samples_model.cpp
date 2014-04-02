@@ -2,17 +2,18 @@
 
 SamplesModel::SamplesModel(Database const& db) : db(db)
 {
-    refresh();
-}
-
-void SamplesModel::refresh()
-{
-    setSamples(&db.getSamples(nullptr));
+    reset();
 }
 
 SamplesModel::~SamplesModel()
 {
-    setSamples(nullptr);
+}
+
+// A slot that's called for when other models change that affect us
+// (i.e. the list of directories)
+void SamplesModel::reset()
+{
+    setSamples(&db.getSamples(nullptr));
 }
 
 Sample const* SamplesModel::getSample(QModelIndex const& index)
@@ -22,8 +23,6 @@ Sample const* SamplesModel::getSample(QModelIndex const& index)
 
 void SamplesModel::setSamples(QList<Sample> const* samples)
 {
-    beginResetModel();
-
     for (auto sample : items) {
         delete sample;
     }
@@ -34,8 +33,6 @@ void SamplesModel::setSamples(QList<Sample> const* samples)
             items << new Sample(sample);
         }
     }
-
-    endResetModel();
 }
 
 QModelIndex SamplesModel::index(int row, int column, const QModelIndex &parent) const
@@ -82,5 +79,7 @@ QVariant SamplesModel::headerData(int section, Qt::Orientation orientation, int 
 
 void SamplesModel::setFilterDirs(QList<QDir> const& filterDirs)
 {
+    beginResetModel();
     setSamples(&db.getSamples(&filterDirs));
+    endResetModel();
 }

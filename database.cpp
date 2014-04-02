@@ -58,6 +58,9 @@ Sample Database::getSample(QFile const& file)
 
 bool Database::addSampleTag(Sample const& sample, Tag const& tag)
 {
+    qDebug() << __FUNCSIG__;
+    qDebug() << "Add tag" << tag.id << "to sample" << sample.id;
+
     QSqlQuery query;
     query.prepare("INSERT OR IGNORE INTO sample_tags (sample_id, tag_id) VALUES (?,?)");
     query.addBindValue(sample.id);
@@ -67,6 +70,9 @@ bool Database::addSampleTag(Sample const& sample, Tag const& tag)
 
 bool Database::removeSampleTag(Sample const& sample, Tag const& tag)
 {
+    qDebug() << __FUNCSIG__;
+    qDebug() << "Remove tag" << tag.id << "from sample" << sample.id;
+
     QSqlQuery query;
     query.prepare("DELETE FROM sample_tags WHERE sample_id = ? AND tag_id = ?");
     query.addBindValue(sample.id);

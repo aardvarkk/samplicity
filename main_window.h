@@ -43,6 +43,8 @@ private slots:
 
     void tagModeToggled(bool checked);
 
+    void tagSelectionChanged(QItemSelection const& selected, QItemSelection const& deselected);
+
 private:
     void filterSamples();
 
