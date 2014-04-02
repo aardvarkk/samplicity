@@ -1,5 +1,6 @@
 #include <QFileDialog>
 #include <QLayout>
+#include <QDesktopServices>
 #include <QUndoView>
 
 #include "command_add_directory.h"
@@ -9,6 +10,15 @@
 #include "edit_tags_dialog.h"
 
 #include "modeltest.h"
+
+struct TagMode
+{
+    enum
+    {
+        Filter,
+        Apply
+    };
+};
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -24,6 +34,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Default settings
     ui->actionLoop_Playback->setChecked(settings->value("loopPlayback", false).toBool());
+
+    auto tagMode = settings->value("tagMode", TagMode::Filter).toInt();
+    ui->filterRadioButton->setChecked(tagMode == TagMode::Filter);
+    ui->applyRadioButton->setChecked(tagMode == TagMode::Apply);
+    ui->tagMode->setId(ui->filterRadioButton, TagMode::Filter);
+    ui->tagMode->setId(ui->applyRadioButton, TagMode::Apply);
 
     undoStack = new QUndoStack(this);
     // auto undoView = new QUndoView(undoStack);
@@ -67,6 +83,19 @@ MainWindow::MainWindow(QWidget *parent) :
 //    ui->tagsTreeView->setSortingEnabled(true);
 //    tagsProxyModel.sort(0, Qt::AscendingOrder);
     // auto modelTest = new ModelTest(tagsModel, this);
+
+    QObject::connect(
+                ui->filterRadioButton,
+                SIGNAL(toggled(bool)),
+                this,
+                SLOT(tagModeToggled(bool))
+                );
+    QObject::connect(
+                ui->applyRadioButton,
+                SIGNAL(toggled(bool)),
+                this,
+                SLOT(tagModeToggled(bool))
+                );
 }
 
 void MainWindow::on_samplesTreeViewSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected)
@@ -140,4 +169,28 @@ void MainWindow::on_actionTags_triggered()
     EditTagsDialog dialog(*db, this);
     dialog.exec();
     tagsModel->refresh();
+}
+
+void MainWindow::on_actionOpen_sample_triggered()
+{
+    // Get last selected sample
+    auto selected = ui->samplesTreeView->selectionModel()->selectedIndexes();
+    if (selected.empty()) {
+        return;
+    }
+
+    auto s = static_cast<Sample*>(selected.last().internalPointer());
+
+    #ifdef Q_OS_WIN
+    QProcess::startDetached(
+                "explorer",
+                QStringList() << "/select," << QDir::toNativeSeparators(s->fullPath())
+                );
+    #endif
+}
+
+void MainWindow::tagModeToggled(bool checked)
+{
+    qDebug() << __FUNCSIG__;
+    settings->setValue("tagMode", ui->tagMode->checkedId());
 }

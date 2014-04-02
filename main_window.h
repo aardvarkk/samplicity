@@ -39,6 +39,10 @@ private slots:
 
     void on_actionTags_triggered();
 
+    void on_actionOpen_sample_triggered();
+
+    void tagModeToggled(bool checked);
+
 private:
     void filterSamples();
 

@@ -23,10 +23,79 @@
      </widget>
     </item>
     <item>
-     <widget class="QTreeView" name="tagsTreeView">
-      <property name="selectionMode">
-       <enum>QAbstractItemView::ExtendedSelection</enum>
-      </property>
+     <widget class="QWidget" name="tags" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QTreeView" name="tagsTreeView">
+         <property name="selectionMode">
+          <enum>QAbstractItemView::ExtendedSelection</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="tagsModes" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="filterRadioButton">
+            <property name="text">
+             <string>Filter</string>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">tagMode</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="applyRadioButton">
+            <property name="text">
+             <string>Apply</string>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">tagMode</string>
+            </attribute>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
     <item>
@@ -49,6 +118,7 @@
     </property>
     <addaction name="actionAddFile"/>
     <addaction name="actionAddDirectory"/>
+    <addaction name="actionOpen_sample"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -110,8 +180,19 @@
     <string>Ctrl+T</string>
    </property>
   </action>
+  <action name="actionOpen_sample">
+   <property name="text">
+    <string>Open Sample</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="tagMode"/>
+ </buttongroups>
 </ui>
