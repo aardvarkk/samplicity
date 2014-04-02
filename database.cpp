@@ -296,6 +296,13 @@ int Database::getTagChildIndex(Tag const& child)
 
 bool Database::reparentTag(Tag& tag, int parent_id)
 {
+    qDebug() << __FUNCSIG__;
+
+    // Can't reparent to self
+    if (tag.id == parent_id) {
+        return false;
+    }
+
     // Check if the tag given is a parent of the tag with the given parent_id
     // If so, this is invalid as it will create a circular reference
     auto parent = getTag(parent_id);

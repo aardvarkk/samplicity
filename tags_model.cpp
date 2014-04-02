@@ -64,6 +64,13 @@ bool TagsModel::renameTag(Tag& tag, QString const& newName)
     return success;
 }
 
+bool TagsModel::reparentTag(Tag& tag, int parent_id)
+{
+    auto success = db.reparentTag(tag, parent_id);
+    refresh();
+    return success;
+}
+
 QModelIndex TagsModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (parent.isValid()) {

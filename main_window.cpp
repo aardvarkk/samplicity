@@ -5,7 +5,7 @@
 #include "command_add_directory.h"
 #include "command_add_file.h"
 #include "main_window.h"
-#include "ui_mainwindow.h"
+#include "ui_main_window.h"
 #include "edit_tags_dialog.h"
 
 #include "modeltest.h"

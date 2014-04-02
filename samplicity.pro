@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     tags_model.cpp \
     main_window.cpp \
     line_edit_dialog.cpp \
-    expanding_tree_view.cpp
+    expanding_tree_view.cpp \
+    reparent_tag_dialog.cpp
 
 HEADERS  += \
     database.h \
@@ -46,11 +47,13 @@ HEADERS  += \
     tags_model.h \
     main_window.h \
     line_edit_dialog.h \
-    expanding_tree_view.h
+    expanding_tree_view.h \
+    reparent_tag_dialog.h
 
 FORMS    += \
     edit_tags_dialog.ui \
     main_window.ui \
-    line_edit_dialog.ui
+    line_edit_dialog.ui \
+    reparent_tag_dialog.ui
 
 include(./modeltest.pri)

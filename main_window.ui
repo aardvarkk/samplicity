@@ -96,12 +96,18 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Loop Playback</string>
+    <string>&amp;Loop Playback</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
   <action name="actionTags">
    <property name="text">
-    <string>Tags...</string>
+    <string>&amp;Tags...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
    </property>
   </action>
  </widget>

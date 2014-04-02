@@ -62,6 +62,10 @@ private slots:
         QVERIFY(child.parent_id == 0);
         QVERIFY(db->reparentTag(parent, child.id));
         QVERIFY(parent.parent_id == child.id);
+
+        // Can't reparent to self
+        auto tag = db->addTag("hipster");
+        QVERIFY(!db->reparentTag(tag, tag.id));
     }
 
     void invalidReparentTag()

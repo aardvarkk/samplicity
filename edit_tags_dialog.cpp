@@ -2,8 +2,9 @@
 
 #include "line_edit_dialog.h"
 #include "edit_tags_dialog.h"
-#include "ui_edit_tags_dialog.h"
+#include "reparent_tag_dialog.h"
 #include "tags_model.h"
+#include "ui_edit_tags_dialog.h"
 
 EditTagsDialog::EditTagsDialog(Database& db, QWidget *parent) :
     QDialog(parent),
@@ -16,9 +17,9 @@ EditTagsDialog::EditTagsDialog(Database& db, QWidget *parent) :
     ui->treeView->setModel(tagsModel);
 
     buttonAddTag = ui->buttonBox->addButton(tr("&Add"), QDialogButtonBox::ActionRole);
-    buttonRemoveTag = ui->buttonBox->addButton(tr("Remove"), QDialogButtonBox::ActionRole);
-    buttonRenameTag = ui->buttonBox->addButton(tr("Rename"), QDialogButtonBox::ActionRole);
-    buttonReparentTag = ui->buttonBox->addButton(tr("Reparent"), QDialogButtonBox::ActionRole);
+    buttonRemoveTag = ui->buttonBox->addButton(tr("Re&move"), QDialogButtonBox::ActionRole);
+    buttonRenameTag = ui->buttonBox->addButton(tr("Re&name"), QDialogButtonBox::ActionRole);
+    buttonReparentTag = ui->buttonBox->addButton(tr("Re&parent"), QDialogButtonBox::ActionRole);
 
     QObject::connect(
                 buttonAddTag,
@@ -39,6 +40,13 @@ EditTagsDialog::EditTagsDialog(Database& db, QWidget *parent) :
                 SIGNAL(clicked(bool)),
                 this,
                 SLOT(renameTag(bool))
+                );
+
+    QObject::connect(
+                buttonReparentTag,
+                SIGNAL(clicked(bool)),
+                this,
+                SLOT(reparentTag(bool))
                 );
 
 }
@@ -104,6 +112,28 @@ void EditTagsDialog::renameTag(bool checked)
             return;
         }
         QMessageBox::warning(this, tr("Warning"), tr("Error adding tag"));
+    }
+}
+
+void EditTagsDialog::reparentTag(bool checked)
+{
+    qDebug() << __FUNCSIG__;
+
+    auto selected = ui->treeView->selectionModel()->selectedIndexes();
+    if (selected.empty()) {
+        return;
+    }
+
+    auto w = static_cast<TagWrapper*>(selected.last().internalPointer());
+
+    ReparentTagDialog dialog(tagsModel);
+    while (dialog.exec() == QDialog::Accepted) {
+        auto parent = dialog.getSelectedTag();
+//        qDebug() << "Reparent" << w->tag.id << "from" << w->tag.parent_id << "to" << parent.id;
+        if (tagsModel->reparentTag(w->tag, parent.id)) {
+            return;
+        }
+        QMessageBox::warning(this, tr("Warning"), tr("Error reparenting tag"));
     }
 }
 

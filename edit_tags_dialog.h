@@ -23,6 +23,7 @@ private slots:
     void addTag(bool checked = false);
     void removeTag(bool checked = false);
     void renameTag(bool checked = false);
+    void reparentTag(bool checked = false);
 
 private:
     Database& db;

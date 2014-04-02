@@ -23,6 +23,7 @@ public:
     bool addTag(QString const& name, int parent_id = 0);
     bool removeTag(Tag const& tag);
     bool renameTag(Tag& tag, QString const& newName);
+    bool reparentTag(Tag& tag, int parent_id);
     void refresh();
 
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
