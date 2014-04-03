@@ -73,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->samplesTreeView->selectionModel(),
         SIGNAL(currentChanged(QModelIndex,QModelIndex)),
         this,
-        SLOT(on_samplesTreeViewSelectionChanged(QModelIndex, QModelIndex))
+        SLOT(sampleSelectionChanged(QModelIndex, QModelIndex))
         );
 
     ui->tagsTreeView->setModel(tagsModel);
@@ -135,12 +135,23 @@ void MainWindow::tagSelectionChanged(QItemSelection const& selected, QItemSelect
     }
 }
 
-void MainWindow::on_samplesTreeViewSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected)
+void MainWindow::sampleSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected)
 {
+    qDebug() << __FUNCSIG__;
+
+    if (!selected.isValid()) {
+        return;
+    }
+
     // If we're in "Apply" tag mode, we want to show the relevant tags for this sample
     if (settings->value("tagMode").toInt() == TagMode::Apply) {
         ui->tagsTreeView->selectionModel()->clearSelection();
-        // TODO: Add selections for each already-selected tag
+
+        // TODO: Add selections for each applied tag
+        auto tags = db->getSampleTags(*static_cast<Sample*>(selected.internalPointer()));
+        for (auto t : tags) {
+            ui->tagsTreeView->selectionModel()->select(tagsModel->modelIndex(t), QItemSelectionModel::Select);
+        }
     }
 
     auto sample = samplesModel->getSample(selected);

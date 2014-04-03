@@ -11,7 +11,7 @@ AudioPlayer::AudioPlayer(bool loop) : mediaPlayer(nullptr), soundEffect(nullptr)
 void AudioPlayer::play(QString const& path)
 {
     qDebug() << __FUNCSIG__;
-    qDebug() << path;
+//    qDebug() << path;
 
 #ifdef MEDIAPLAYER
     delete mediaPlayer;

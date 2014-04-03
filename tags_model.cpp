@@ -81,6 +81,21 @@ bool TagsModel::removeSampleTag(Sample const& sample, Tag const& tag)
     return db.removeSampleTag(sample, tag);
 }
 
+QModelIndex TagsModel::modelIndex(Tag const& tag)
+{
+    qDebug() << __FUNCSIG__;
+
+    // Can only find stuff if there are actual tags
+    if (tags->children.empty()) {
+        return QModelIndex();
+    }
+
+    auto indexList = match(createIndex(0, 0, &tags->children.first()), TagsModel::IDRole, tag.id);
+//    qDebug() << indexList;
+
+    return indexList.empty() ? QModelIndex() : indexList.first();
+}
+
 QModelIndex TagsModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (parent.isValid()) {
@@ -116,11 +131,19 @@ int TagsModel::columnCount(const QModelIndex &parent) const
 
 QVariant TagsModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || role != Qt::DisplayRole) {
+    if (!index.isValid()) {
         return QVariant();
     }
 
-    return static_cast<TagWrapper*>(index.internalPointer())->tag.name;
+    auto w = static_cast<TagWrapper*>(index.internalPointer());
+    switch (role) {
+    case Qt::DisplayRole:
+        return w->tag.name;
+    case TagsModel::IDRole:
+        return w->tag.id;
+    default:
+        return QVariant();
+    }
 }
 
 QVariant TagsModel::headerData(int section, Qt::Orientation orientation, int role) const

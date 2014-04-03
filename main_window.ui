@@ -40,7 +40,7 @@
        <item>
         <widget class="QTreeView" name="tagsTreeView">
          <property name="selectionMode">
-          <enum>QAbstractItemView::ExtendedSelection</enum>
+          <enum>QAbstractItemView::MultiSelection</enum>
          </property>
         </widget>
        </item>

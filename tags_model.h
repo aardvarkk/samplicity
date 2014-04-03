@@ -17,6 +17,12 @@ struct TagWrapper
 
 class TagsModel : public QAbstractItemModel
 {
+    // A data role used to retrieve IDs
+    enum
+    {
+        IDRole = Qt::UserRole
+    };
+
 public:
     TagsModel(Database& db);
     ~TagsModel();
@@ -27,6 +33,7 @@ public:
     bool addSampleTag(Sample const& sample, Tag const& tag);
     bool removeSampleTag(Sample const& sample, Tag const& tag);
     void refresh();
+    QModelIndex modelIndex(Tag const& tag);
 
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     virtual QModelIndex parent(const QModelIndex &index) const;

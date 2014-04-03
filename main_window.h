@@ -33,7 +33,7 @@ private slots:
 
     void on_dirsTreeViewSelectionChanged(QItemSelection const& selected, QItemSelection const& deselected);
 
-    void on_samplesTreeViewSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected);
+    void sampleSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected);
 
     void on_actionLoop_Playback_toggled(bool arg1);
 
