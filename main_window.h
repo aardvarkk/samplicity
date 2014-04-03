@@ -59,6 +59,8 @@ private:
 
     SamplesModel* samplesModel;
     AudioPlayer* audioPlayer;
+
+    bool writeSampleTags;
 };
 
 #endif // MAINWINDOW_H

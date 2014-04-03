@@ -28,7 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
     samplesModel(new SamplesModel(*db)),
     tagsModel(new TagsModel(*db)),
     audioPlayer(new AudioPlayer),
-    settings(Settings::getSettings())
+    settings(Settings::getSettings()),
+    writeSampleTags(true)
 {
     ui->setupUi(this);
 
@@ -109,10 +110,16 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::tagSelectionChanged(QItemSelection const& selected, QItemSelection const& deselected)
 {
     qDebug() << __FUNCSIG__;
+//    qDebug() << sender();
 
     switch (settings->value("tagMode").toInt()) {
         case TagMode::Apply:
         {
+            // In case the selection changed, but not via the user (i.e. sample was switched)
+            if (!writeSampleTags) {
+                return;
+            }
+
             auto selected_sample = ui->samplesTreeView->selectionModel()->selectedIndexes();
             if (selected_sample.empty()) {
                 return;
@@ -145,13 +152,17 @@ void MainWindow::sampleSelectionChanged(QModelIndex const& selected, QModelIndex
 
     // If we're in "Apply" tag mode, we want to show the relevant tags for this sample
     if (settings->value("tagMode").toInt() == TagMode::Apply) {
-        ui->tagsTreeView->selectionModel()->clearSelection();
+        // Disable (then later re-enable) actually writing sample tags
+        // If it's disabled, we won't try to change the tags when the tag selections change
+        writeSampleTags = false;
 
-        // TODO: Add selections for each applied tag
+        ui->tagsTreeView->selectionModel()->clearSelection();
         auto tags = db->getSampleTags(*static_cast<Sample*>(selected.internalPointer()));
         for (auto t : tags) {
             ui->tagsTreeView->selectionModel()->select(tagsModel->modelIndex(t), QItemSelectionModel::Select);
         }
+
+        writeSampleTags = true;
     }
 
     auto sample = samplesModel->getSample(selected);

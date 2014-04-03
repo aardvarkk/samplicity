@@ -83,7 +83,7 @@ bool TagsModel::removeSampleTag(Sample const& sample, Tag const& tag)
 
 QModelIndex TagsModel::modelIndex(Tag const& tag)
 {
-    qDebug() << __FUNCSIG__;
+    // qDebug() << __FUNCSIG__;
 
     // Can only find stuff if there are actual tags
     if (tags->children.empty()) {
