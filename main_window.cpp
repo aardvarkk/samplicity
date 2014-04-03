@@ -59,7 +59,12 @@ MainWindow::MainWindow(QWidget *parent) :
         SLOT(directorySelectionChanged(QItemSelection const&, QItemSelection const&))
         );
 
-    ui->samplesTreeView->setModel(samplesModel);
+//    ui->samplesTreeView->setModel(samplesModel);
+    samplesProxyModel.setSourceModel(samplesModel);
+    samplesProxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
+    ui->samplesTreeView->setModel(&samplesProxyModel);
+    ui->samplesTreeView->setSortingEnabled(true);
+    samplesProxyModel.sort(0, Qt::AscendingOrder);
     // auto modelTest = new ModelTest(samplesModel, this);
 
     // Make it such that when any directories/files are added or changed,
@@ -171,7 +176,7 @@ void MainWindow::sampleSelectionChanged(QModelIndex const& selected, QModelIndex
         setApplyTagSelections(*static_cast<Sample*>(selected.internalPointer()));
     }
 
-    auto sample = samplesModel->getSample(selected);
+    auto sample = samplesModel->getSample(samplesProxyModel.mapToSource(selected));
     audioPlayer->stop();
     audioPlayer->play(sample->fullPath());
 }

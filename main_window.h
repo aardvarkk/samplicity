@@ -58,7 +58,9 @@ private:
     QSortFilterProxyModel tagsProxyModel;
     TagsModel* tagsModel;
 
+    QSortFilterProxyModel samplesProxyModel;
     SamplesModel* samplesModel;
+
     AudioPlayer* audioPlayer;
 
     bool writeSampleTags;
