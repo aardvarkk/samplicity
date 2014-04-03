@@ -558,11 +558,11 @@ QList<Sample> Database::getFilteredSamples(
     query.exec(queryStr);
     while (query.next()) {
         samples << Sample(
-            query.value(0).toInt(),
             query.value(1).toInt(),
-            query.value(2).toString(),
+            query.value(2).toInt(),
             query.value(3).toString(),
-            query.value(4).toString()
+            query.value(4).toString(),
+            query.value(5).toString()
             );
     }
 
