@@ -13,7 +13,7 @@ SamplesModel::~SamplesModel()
 // (i.e. the list of directories)
 void SamplesModel::reset()
 {
-    setSamples(&db.getSamples(nullptr));
+    setSamples(&db.getFilteredSamples(QList<QDir>(), QList<Tag>()));
 }
 
 Sample const* SamplesModel::getSample(QModelIndex const& index)
@@ -77,9 +77,12 @@ QVariant SamplesModel::headerData(int section, Qt::Orientation orientation, int 
     return QVariant();
 }
 
-void SamplesModel::setFilterDirs(QList<QDir> const& filterDirs)
+void SamplesModel::setFilter(
+        QList<QDir> const& filterDirs,
+        QList<Tag> const& filterTags
+        )
 {
     beginResetModel();
-    setSamples(&db.getSamples(&filterDirs));
+    setSamples(&db.getFilteredSamples(filterDirs, filterTags));
     endResetModel();
 }

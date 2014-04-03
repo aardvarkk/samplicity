@@ -469,42 +469,82 @@ QList<QDir> Database::getDirectoryChildren(QDir const* dir) const
     return children;
 }
 
-void addChildren(int dir_id, QStringList& ids) {
+void addDirectoryChildren(int dirID, QStringList& dirIDs) {
     // Add ourselves
-    ids << QString::number(dir_id);
+    dirIDs << QString::number(dirID);
 
     // Add all of our children (items who have us as a parent)
     QSqlQuery query;
     query.prepare("SELECT id FROM dirs WHERE parent_id = ?");
-    query.addBindValue(dir_id);
+    query.addBindValue(dirID);
     query.exec();
     while (query.next()) {
-        addChildren(query.value(0).toInt(), ids);
+        addDirectoryChildren(query.value(0).toInt(), dirIDs);
     }
 }
 
-QList<Sample> Database::getSamples(QList<QDir> const* filterDirs) const
+void addTagChildren(int tagID, QStringList& sampleIDs) {
+    // Add ourselves
+    sampleIDs << QString::number(tagID);
+
+    // Add all of our children (items who have us as a parent)
+    QSqlQuery query;
+    query.prepare("SELECT id FROM tags WHERE parent_id = ?");
+    query.addBindValue(tagID);
+    query.exec();
+    while (query.next()) {
+        addTagChildren(query.value(0).toInt(), sampleIDs);
+    }
+}
+
+QList<Sample> Database::getFilteredSamples(
+        QList<QDir> const& filterDirs,
+        QList<Tag> const& filterTags
+        ) const
 {
     QList<Sample> samples;
     QSqlQuery query;
 
-    if (filterDirs && !filterDirs->empty()) {
-        // Create a list of all IDs that would be valid parents for samples based on given dirs
-        QStringList ids;
-        for (auto filterDir : *filterDirs) {
-            QSqlQuery getID;
-            getID.prepare("SELECT id FROM dirs WHERE path = ?");
-            getID.addBindValue(filterDir.absolutePath());
-            getID.exec();
-            while (getID.next()) {
-                addChildren(getID.value(0).toInt(), ids);
-            }
+    // Create a list of all IDs that would be valid parents for samples based on given dirs
+    QStringList dirIDs;
+    for (auto filterDir : filterDirs) {
+        QSqlQuery getID;
+        getID.prepare("SELECT id FROM dirs WHERE path = ?");
+        getID.addBindValue(filterDir.absolutePath());
+        getID.exec();
+        while (getID.next()) {
+            addDirectoryChildren(getID.value(0).toInt(), dirIDs);
         }
+    }
 
-        // Get all matching samples
-        query.exec("SELECT samples.id, dir_id, name, filename, path FROM samples JOIN dirs ON samples.dir_id = dirs.id WHERE dir_id IN (" + ids.join(",") + ")");
-    } else {
-        query.exec("SELECT samples.id, dir_id, name, filename, path FROM samples JOIN dirs ON samples.dir_id = dirs.id");
+    // Create a list of all sample IDs that contain a tag (or any children of those tags)
+    QStringList sampleIDs;
+    for (auto filterTag : filterTags) {
+        addTagChildren(filterTag.id, sampleIDs);
+    }
+
+    // No filtering (select NULL so all columns match)
+    if (filterDirs.empty() && filterTags.empty()) {
+        query.exec("SELECT NULL, samples.id, dir_id, name, filename, path FROM samples JOIN dirs ON samples.dir_id = dirs.id");
+    }
+    // Only directory filtering (select NULL so all columns match)
+    else if (!filterDirs.empty() && filterTags.empty()) {
+        query.exec("SELECT NULL, samples.id, dir_id, name, filename, path FROM samples JOIN dirs ON samples.dir_id = dirs.id WHERE dir_id IN (" + dirIDs.join(",") + ")");
+    }
+    // Only tag filtering
+    else if (filterDirs.empty() && !filterTags.empty()) {
+        QString queryStr;
+        queryStr += "SELECT COUNT(samples.id), samples.id, dir_id, name, filename, path FROM ";
+        queryStr += "sample_tags JOIN samples ON sample_tags.sample_id = samples.id ";
+        queryStr += "JOIN dirs ON samples.dir_id = dirs.id ";
+        queryStr += "WHERE sample_tags.tag_id IN (" + sampleIDs.join(",") + ") ";
+        queryStr += "GROUP BY samples.id ";
+        queryStr += "HAVING COUNT(samples.id) = " + QString::number(filterTags.size());
+        query.exec(queryStr);
+    }
+    // Both directory and tag filtering
+    else {
+
     }
 
     while (query.next()) {

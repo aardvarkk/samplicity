@@ -21,7 +21,11 @@ public:
     virtual QVariant headerData(int section, Qt::Orientation orientation,
                                 int role = Qt::DisplayRole) const;
 
-    void setFilterDirs(QList<QDir> const& filterDirs);
+    void setFilter(
+            QList<QDir> const& filterDirs,
+            QList<Tag> const& filterTags
+            );
+
     Sample const* getSample(QModelIndex const& index);
 
 public slots:

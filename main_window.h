@@ -32,7 +32,7 @@ private slots:
 
     void on_actionAddFile_triggered();
 
-    void on_dirsTreeViewSelectionChanged(QItemSelection const& selected, QItemSelection const& deselected);
+    void directorySelectionChanged(QItemSelection const& selected, QItemSelection const& deselected);
 
     void sampleSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected);
 

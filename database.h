@@ -17,7 +17,11 @@ public:
     bool addDirectory(QDir const& dir);
     bool removeDirectory(QDir const& dir);
     QList<QDir> getDirectoryChildren(QDir const* dir) const;
-    QList<Sample> getSamples(QList<QDir> const* filterDirs = nullptr) const;
+
+    QList<Sample> getFilteredSamples(
+            QList<QDir> const& filterDirs,
+            QList<Tag> const& filterTags
+            ) const;
 
     Sample getSample(QFile const& file);
     bool addSampleTag(Sample const& sample, Tag const& tag);

@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dirsTreeView->selectionModel(),
         SIGNAL(selectionChanged(QItemSelection const&, QItemSelection const&)),
         this,
-        SLOT(on_dirsTreeViewSelectionChanged(QItemSelection const&, QItemSelection const&))
+        SLOT(directorySelectionChanged(QItemSelection const&, QItemSelection const&))
         );
 
     ui->samplesTreeView->setModel(samplesModel);
@@ -138,6 +138,7 @@ void MainWindow::tagSelectionChanged(QItemSelection const& selected, QItemSelect
         }
         break;
         case TagMode::Filter:
+            filterSamples();
         break;
     }
 }
@@ -187,20 +188,27 @@ MainWindow::~MainWindow()
 
 void MainWindow::filterSamples()
 {
-    QList<QDir> selectedDirs;
-
     // Get all selected directories
-    auto selection = ui->dirsTreeView->selectionModel()->selection();
-    for (auto selectionRange : selection) {
+    QList<QDir> selectedDirs;
+    for (auto selectionRange : ui->dirsTreeView->selectionModel()->selection()) {
         for (auto modelIdx : selectionRange.indexes()) {
             selectedDirs << QDir(directoriesModel->data(modelIdx, Qt::EditRole).toString());
         }
     }
 
-    samplesModel->setFilterDirs(selectedDirs);
+    // Get all selected tags
+    QList<Tag> selectedTags;
+    for (auto selectionRange : ui->tagsTreeView->selectionModel()->selection()) {
+        for (auto modelIdx : selectionRange.indexes()) {
+            selectedTags << static_cast<TagWrapper*>(modelIdx.internalPointer())->tag;
+        }
+    }
+
+    // Run the filter on the samples model
+    samplesModel->setFilter(selectedDirs, selectedTags);
 }
 
-void MainWindow::on_dirsTreeViewSelectionChanged(QItemSelection const& selected, QItemSelection const& deselected)
+void MainWindow::directorySelectionChanged(QItemSelection const& selected, QItemSelection const& deselected)
 {
     filterSamples();
 }
@@ -267,6 +275,11 @@ void MainWindow::tagModeToggled(bool checked)
     switch (settings->value("tagMode").toInt()) {
     // If switch to apply, show tags for selected sample
     case TagMode::Apply:
+        // Nothing selected...
+        if (ui->samplesTreeView->selectionModel()->selection().empty()) {
+            return;
+        }
+
         setApplyTagSelections(
                     *static_cast<Sample*>(
                         ui->samplesTreeView->selectionModel()->currentIndex().internalPointer()));
