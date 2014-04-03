@@ -142,6 +142,19 @@ void MainWindow::tagSelectionChanged(QItemSelection const& selected, QItemSelect
     }
 }
 
+void MainWindow::setApplyTagSelections(Sample const& sample)
+{
+    writeSampleTags = false;
+
+    ui->tagsTreeView->selectionModel()->clearSelection();
+    auto tags = db->getSampleTags(sample);
+    for (auto t : tags) {
+        ui->tagsTreeView->selectionModel()->select(tagsModel->modelIndex(t), QItemSelectionModel::Select);
+    }
+
+    writeSampleTags = true;
+}
+
 void MainWindow::sampleSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected)
 {
     qDebug() << __FUNCSIG__;
@@ -154,15 +167,7 @@ void MainWindow::sampleSelectionChanged(QModelIndex const& selected, QModelIndex
     if (settings->value("tagMode").toInt() == TagMode::Apply) {
         // Disable (then later re-enable) actually writing sample tags
         // If it's disabled, we won't try to change the tags when the tag selections change
-        writeSampleTags = false;
-
-        ui->tagsTreeView->selectionModel()->clearSelection();
-        auto tags = db->getSampleTags(*static_cast<Sample*>(selected.internalPointer()));
-        for (auto t : tags) {
-            ui->tagsTreeView->selectionModel()->select(tagsModel->modelIndex(t), QItemSelectionModel::Select);
-        }
-
-        writeSampleTags = true;
+        setApplyTagSelections(*static_cast<Sample*>(selected.internalPointer()));
     }
 
     auto sample = samplesModel->getSample(selected);
@@ -259,6 +264,18 @@ void MainWindow::tagModeToggled(bool checked)
     qDebug() << __FUNCSIG__;
     settings->setValue("tagMode", ui->tagMode->checkedId());
 
-    // TODO: If switch from filter to apply, show tags for selected sample
-    // If switch from apply to filter, probably clear the tag selection
+    switch (settings->value("tagMode").toInt()) {
+    // If switch to apply, show tags for selected sample
+    case TagMode::Apply:
+        setApplyTagSelections(
+                    *static_cast<Sample*>(
+                        ui->samplesTreeView->selectionModel()->currentIndex().internalPointer()));
+        break;
+    // If switch to filter, probably clear the tag selection
+    case TagMode::Filter:
+        ui->tagsTreeView->selectionModel()->clearSelection();
+        break;
+    default:
+        return;
+    }
 }

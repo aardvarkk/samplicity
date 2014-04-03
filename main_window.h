@@ -24,6 +24,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void setApplyTagSelections(Sample const& sample);
 private slots:
     void on_actionExit_triggered();
 
