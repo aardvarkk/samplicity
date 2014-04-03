@@ -524,29 +524,38 @@ QList<Sample> Database::getFilteredSamples(
     }
 
     // No filtering (select NULL so all columns match)
+    QString queryStr;
     if (filterDirs.empty() && filterTags.empty()) {
-        query.exec("SELECT NULL, samples.id, dir_id, name, filename, path FROM samples JOIN dirs ON samples.dir_id = dirs.id");
+        queryStr += "SELECT NULL, samples.id, dir_id, name, filename, path FROM ";
+        queryStr += "samples JOIN dirs ON samples.dir_id = dirs.id";
     }
     // Only directory filtering (select NULL so all columns match)
     else if (!filterDirs.empty() && filterTags.empty()) {
-        query.exec("SELECT NULL, samples.id, dir_id, name, filename, path FROM samples JOIN dirs ON samples.dir_id = dirs.id WHERE dir_id IN (" + dirIDs.join(",") + ")");
+        queryStr += "SELECT NULL, samples.id, dir_id, name, filename, path FROM ";
+        queryStr += "samples JOIN dirs ON samples.dir_id = dirs.id ";
+        queryStr += "WHERE dir_id IN (" + dirIDs.join(",") + ")";
     }
     // Only tag filtering
     else if (filterDirs.empty() && !filterTags.empty()) {
-        QString queryStr;
         queryStr += "SELECT COUNT(samples.id), samples.id, dir_id, name, filename, path FROM ";
         queryStr += "sample_tags JOIN samples ON sample_tags.sample_id = samples.id ";
         queryStr += "JOIN dirs ON samples.dir_id = dirs.id ";
         queryStr += "WHERE sample_tags.tag_id IN (" + sampleIDs.join(",") + ") ";
         queryStr += "GROUP BY samples.id ";
         queryStr += "HAVING COUNT(samples.id) = " + QString::number(filterTags.size());
-        query.exec(queryStr);
     }
     // Both directory and tag filtering
     else {
-
+        queryStr += "SELECT COUNT(samples.id), samples.id, dir_id, name, filename, path FROM ";
+        queryStr += "sample_tags JOIN samples ON sample_tags.sample_id = samples.id ";
+        queryStr += "JOIN dirs ON samples.dir_id = dirs.id ";
+        queryStr += "WHERE sample_tags.tag_id IN (" + sampleIDs.join(",") + ") ";
+        queryStr += "AND dir_id IN (" + dirIDs.join(",") + ") ";
+        queryStr += "GROUP BY samples.id ";
+        queryStr += "HAVING COUNT(samples.id) = " + QString::number(filterTags.size());
     }
 
+    query.exec(queryStr);
     while (query.next()) {
         samples << Sample(
             query.value(0).toInt(),
