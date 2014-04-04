@@ -25,6 +25,9 @@ public:
     ~MainWindow();
 
     void setApplyTagSelections(Sample const& sample);
+
+    virtual void closeEvent(QCloseEvent* event);
+
 private slots:
     void on_actionExit_triggered();
 

@@ -79,6 +79,7 @@ private slots:
     {
         // Create a file to add
         QFile fake("fake.wav");
+        fake.open(QFile::WriteOnly);
         db->addFile(fake);
         auto sample = db->getSample(fake);
         QVERIFY(sample.id > 0);
@@ -98,6 +99,7 @@ private slots:
     {
         // Should remove the tag from the given sample
         QFile file("tagged.wav");
+        file.open(QFile::WriteOnly);
         db->addFile(file);
         auto sample = db->getSample(file);
         auto tag = db->addTag("delete me");
@@ -147,6 +149,25 @@ private slots:
 
         QVERIFY(db->getTagChildIndex(k1) == 0);
         QVERIFY(db->getTagChildIndex(k2) == 1);
+    }
+
+    void addRating()
+    {
+        QVariant rating;
+
+        // Should remove the tag from the given sample
+        QFile file("toRate.wav");
+        file.open(QFile::WriteOnly);
+        QVERIFY(db->addFile(file));
+        auto sample = db->getSample(file);
+        QVERIFY(db->getRating(sample, rating));
+        QVERIFY(rating.isNull());
+        QVERIFY(db->addRating(sample, 55));
+        QVERIFY(db->getRating(sample, rating));
+        QVERIFY(rating == 55);
+        QVERIFY(db->addRating(sample, QVariant()));
+        QVERIFY(db->getRating(sample, rating));
+        QVERIFY(rating.isNull());
     }
 
     void cleanupTestCase()

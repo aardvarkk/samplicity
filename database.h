@@ -14,6 +14,9 @@ public:
     Database();
     Database(QString const& filename);
 
+    bool addRating(Sample& sample, QVariant const& rating);
+    bool getRating(Sample const& sample, QVariant& rating);
+
     bool addDirectory(QDir const& dir);
     bool removeDirectory(QDir const& dir);
     QList<QDir> getDirectoryChildren(QDir const* dir) const;

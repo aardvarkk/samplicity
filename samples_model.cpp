@@ -44,6 +44,11 @@ QModelIndex SamplesModel::index(int row, int column, const QModelIndex &parent) 
     return createIndex(row, column, items[row]);
 }
 
+int SamplesModel::columnCount(const QModelIndex &parent) const
+{
+    return parent.isValid() ? 0 : 2;
+}
+
 int SamplesModel::rowCount(const QModelIndex &parent) const
 {
     return parent.isValid() ? 0 : items.count();
@@ -58,7 +63,12 @@ QVariant SamplesModel::data(const QModelIndex &index, int role) const
 
     switch (role) {
     case Qt::DisplayRole:
-        return QVariant(sample->filename);
+        switch (index.column()) {
+        case 0: return sample->name;
+        case 1: return sample->rating;
+        default: return QVariant();
+        }
+
         break;
     case Qt::EditRole:
         return QVariant(sample->path);
@@ -71,7 +81,11 @@ QVariant SamplesModel::data(const QModelIndex &index, int role) const
 QVariant SamplesModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
-        return QVariant("Samples");
+        switch (section) {
+        case 0: return "Sample";
+        case 1: return "Rating";
+        default: return QVariant();
+        }
     }
 
     return QVariant();

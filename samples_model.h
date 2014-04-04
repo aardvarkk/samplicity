@@ -16,6 +16,7 @@ public:
     void setSamples(QList<Sample> const* samples = nullptr);
 
     virtual QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
+    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     virtual QVariant headerData(int section, Qt::Orientation orientation,

@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->samplesTreeView->setModel(&samplesProxyModel);
     ui->samplesTreeView->setSortingEnabled(true);
     samplesProxyModel.sort(0, Qt::AscendingOrder);
-    // auto modelTest = new ModelTest(samplesModel, this);
+//    auto modelTest = new ModelTest(samplesModel, this);
 
     // Make it such that when any directories/files are added or changed,
     // the samples view is refreshed
@@ -110,6 +110,10 @@ MainWindow::MainWindow(QWidget *parent) :
                 this,
                 SLOT(tagSelectionChanged(QItemSelection,QItemSelection))
                 );
+
+    restoreGeometry(settings->value("geometry").toByteArray());
+    restoreState(settings->value("windowState").toByteArray());
+    ui->samplesTreeView->header()->restoreState(settings->value("samplesTreeViewState").toByteArray());
 }
 
 void MainWindow::tagSelectionChanged(QItemSelection const& selected, QItemSelection const& deselected)
@@ -296,4 +300,11 @@ void MainWindow::tagModeToggled(bool checked)
     default:
         return;
     }
+}
+
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+    settings->setValue("geometry", saveGeometry());
+    settings->setValue("windowState", saveState());
+    settings->setValue("samplesTreeViewState", ui->samplesTreeView->header()->saveState());
 }

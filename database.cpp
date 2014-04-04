@@ -26,10 +26,40 @@ bool Database::createTables()
     auto success = true;
     QSqlQuery query;
     success &= query.exec("CREATE TABLE IF NOT EXISTS dirs (id INTEGER PRIMARY KEY, parent_id INTEGER, path TEXT UNIQUE)");
-    success &= query.exec("CREATE TABLE IF NOT EXISTS samples (id INTEGER PRIMARY KEY, dir_id INTEGER, name TEXT, filename TEXT, UNIQUE (dir_id, name))");
+    success &= query.exec("CREATE TABLE IF NOT EXISTS samples (id INTEGER PRIMARY KEY, dir_id INTEGER, name TEXT, filename TEXT, rating INTEGER, UNIQUE (dir_id, name))");
     success &= query.exec("CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY, parent_id INTEGER, name TEXT, UNIQUE (parent_id, name))");
     success &= query.exec("CREATE TABLE IF NOT EXISTS sample_tags (id INTEGER PRIMARY KEY, sample_id INTEGER, tag_id INTEGER, UNIQUE (sample_id, tag_id))");
     return success;
+}
+
+bool Database::addRating(Sample& sample, QVariant const& rating)
+{
+    QSqlQuery query;
+    if (rating == QVariant()) {
+        query.prepare("UPDATE samples SET rating = NULL WHERE id = ?");
+    } else {
+        query.prepare("UPDATE samples SET rating = ? WHERE id = ?");
+        query.addBindValue(rating);
+    }
+    query.addBindValue(sample.id);
+    if (query.exec()) {
+        sample.rating = rating;
+        return true;
+    }
+    return false;
+}
+
+bool Database::getRating(Sample const& sample, QVariant& rating)
+{
+    QSqlQuery query;
+    query.prepare("SELECT rating FROM samples WHERE id = ?");
+    query.addBindValue(sample.id);
+    query.exec();
+    while (query.next()) {
+        rating = query.value(0);
+        return true;
+    }
+    return false;
 }
 
 Sample Database::getSample(QFile const& file)
@@ -39,7 +69,7 @@ Sample Database::getSample(QFile const& file)
     auto fileInfo = QFileInfo(file);
 
     QSqlQuery query;
-    query.prepare("SELECT samples.id, samples.dir_id, samples.name, samples.filename, dirs.path FROM samples JOIN dirs ON samples.dir_id = dirs.id WHERE samples.filename = ? AND dirs.path = ?");
+    query.prepare("SELECT samples.id, samples.dir_id, samples.name, samples.filename, dirs.path, samples.rating FROM samples JOIN dirs ON samples.dir_id = dirs.id WHERE samples.filename = ? AND dirs.path = ?");
     query.addBindValue(fileInfo.fileName());
     query.addBindValue(fileInfo.dir().absolutePath());
     query.exec();
@@ -49,7 +79,8 @@ Sample Database::getSample(QFile const& file)
                     query.value(1).toInt(),
                     query.value(2).toString(),
                     query.value(3).toString(),
-                    query.value(4).toString()
+                    query.value(4).toString(),
+                    query.value(5)
                     );
     }
 
@@ -342,6 +373,10 @@ bool Database::addFile(QFile const& file)
 
     auto fileInfo = QFileInfo(file);
 
+    if (!fileInfo.exists()) {
+        return false;
+    }
+
     // Transaction-based if we're only adding a file
     // If we're adding a directory, the directory makes the transaction
     if (QObject::sender() == nullptr) {
@@ -526,18 +561,18 @@ QList<Sample> Database::getFilteredSamples(
     // No filtering (select NULL so all columns match)
     QString queryStr;
     if (filterDirs.empty() && filterTags.empty()) {
-        queryStr += "SELECT NULL, samples.id, dir_id, name, filename, path FROM ";
+        queryStr += "SELECT NULL, samples.id, dir_id, name, filename, path, rating FROM ";
         queryStr += "samples JOIN dirs ON samples.dir_id = dirs.id";
     }
     // Only directory filtering (select NULL so all columns match)
     else if (!filterDirs.empty() && filterTags.empty()) {
-        queryStr += "SELECT NULL, samples.id, dir_id, name, filename, path FROM ";
+        queryStr += "SELECT NULL, samples.id, dir_id, name, filename, path, rating FROM ";
         queryStr += "samples JOIN dirs ON samples.dir_id = dirs.id ";
         queryStr += "WHERE dir_id IN (" + dirIDs.join(",") + ")";
     }
     // Only tag filtering
     else if (filterDirs.empty() && !filterTags.empty()) {
-        queryStr += "SELECT COUNT(samples.id), samples.id, dir_id, name, filename, path FROM ";
+        queryStr += "SELECT COUNT(samples.id), samples.id, dir_id, name, filename, path, rating FROM ";
         queryStr += "sample_tags JOIN samples ON sample_tags.sample_id = samples.id ";
         queryStr += "JOIN dirs ON samples.dir_id = dirs.id ";
         queryStr += "WHERE sample_tags.tag_id IN (" + sampleIDs.join(",") + ") ";
@@ -546,7 +581,7 @@ QList<Sample> Database::getFilteredSamples(
     }
     // Both directory and tag filtering
     else {
-        queryStr += "SELECT COUNT(samples.id), samples.id, dir_id, name, filename, path FROM ";
+        queryStr += "SELECT COUNT(samples.id), samples.id, dir_id, name, filename, path, rating FROM ";
         queryStr += "sample_tags JOIN samples ON sample_tags.sample_id = samples.id ";
         queryStr += "JOIN dirs ON samples.dir_id = dirs.id ";
         queryStr += "WHERE sample_tags.tag_id IN (" + sampleIDs.join(",") + ") ";
@@ -562,7 +597,8 @@ QList<Sample> Database::getFilteredSamples(
             query.value(2).toInt(),
             query.value(3).toString(),
             query.value(4).toString(),
-            query.value(5).toString()
+            query.value(5).toString(),
+            query.value(6).toString()
             );
     }
 
