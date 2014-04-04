@@ -65,7 +65,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->samplesTreeView->setModel(&samplesProxyModel);
     ui->samplesTreeView->setSortingEnabled(true);
     samplesProxyModel.sort(0, Qt::AscendingOrder);
-//    auto modelTest = new ModelTest(samplesModel, this);
+    samplesProxyModel.setDynamicSortFilter(false);
+    auto modelTest = new ModelTest(samplesModel, this);
 
     // Make it such that when any directories/files are added or changed,
     // the samples view is refreshed
@@ -308,3 +309,68 @@ void MainWindow::closeEvent(QCloseEvent* event)
     settings->setValue("windowState", saveState());
     settings->setValue("samplesTreeViewState", ui->samplesTreeView->header()->saveState());
 }
+
+void MainWindow::on_actionUnrated_triggered()
+{
+    addCurrentSampleRating(QVariant(QVariant::Int));
+}
+
+void MainWindow::on_actionRate_10_triggered()
+{
+    addCurrentSampleRating(10);
+}
+
+void MainWindow::on_actionRate_20_triggered()
+{
+    addCurrentSampleRating(20);
+}
+
+void MainWindow::on_actionRate_30_triggered()
+{
+    addCurrentSampleRating(30);
+}
+
+void MainWindow::on_actionRate_40_triggered()
+{
+    addCurrentSampleRating(40);
+}
+
+void MainWindow::on_actionRate_50_triggered()
+{
+    addCurrentSampleRating(50);
+}
+
+void MainWindow::on_actionRate_60_triggered()
+{
+    addCurrentSampleRating(60);
+}
+
+void MainWindow::on_actionRate_70_triggered()
+{
+    addCurrentSampleRating(70);
+}
+
+void MainWindow::on_actionRate_80_triggered()
+{
+    addCurrentSampleRating(80);
+}
+
+void MainWindow::on_actionRate_90_triggered()
+{
+    addCurrentSampleRating(90);
+}
+
+void MainWindow::on_actionRate_100_triggered()
+{
+    addCurrentSampleRating(100);
+}
+
+void MainWindow::addCurrentSampleRating(QVariant const& rating)
+{
+    samplesModel->addRating(
+                samplesProxyModel.mapToSource(ui->samplesTreeView->currentIndex()),
+                rating
+                );
+}
+
+

@@ -11,9 +11,8 @@ class SamplesModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    SamplesModel(Database const& db);
+    SamplesModel(Database& db);
     ~SamplesModel();
-    void setSamples(QList<Sample> const* samples = nullptr);
 
     virtual QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
@@ -27,14 +26,16 @@ public:
             QList<Tag> const& filterTags
             );
 
-    Sample const* getSample(QModelIndex const& index);
+    Sample* getSample(QModelIndex const& index);
+    bool addRating(QModelIndex const& index, QVariant const& rating);
 
 public slots:
     void reset();
 
 private:
+    void setSamples(QList<Sample> const* samples = nullptr);
     QList<Sample*> items;
-    Database const& db;
+    Database& db;
 };
 
 #endif // SAMPLES_MODEL_H

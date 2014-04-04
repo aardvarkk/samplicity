@@ -2,7 +2,7 @@
 
 #include "sample.h"
 
-Sample::Sample() : id(0), dir_id(0), name(""), filename(""), path(""), rating(QVariant())
+Sample::Sample() : id(0), dir_id(0), name(""), filename(""), path(""), rating(QVariant(QVariant::Int))
 {
 }
 

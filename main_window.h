@@ -49,6 +49,21 @@ private slots:
 
     void tagSelectionChanged(QItemSelection const& selected, QItemSelection const& deselected);
 
+    void on_actionUnrated_triggered();
+
+    void addCurrentSampleRating(QVariant const& rating);
+
+    void on_actionRate_10_triggered();
+    void on_actionRate_20_triggered();
+    void on_actionRate_30_triggered();
+    void on_actionRate_40_triggered();
+    void on_actionRate_50_triggered();
+    void on_actionRate_60_triggered();
+    void on_actionRate_70_triggered();
+    void on_actionRate_80_triggered();
+    void on_actionRate_90_triggered();
+    void on_actionRate_100_triggered();
+
 private:
     void filterSamples();
 

@@ -1,6 +1,6 @@
 #include "samples_model.h"
 
-SamplesModel::SamplesModel(Database const& db) : db(db)
+SamplesModel::SamplesModel(Database& db) : db(db)
 {
     reset();
 }
@@ -16,9 +16,26 @@ void SamplesModel::reset()
     setSamples(&db.getFilteredSamples(QList<QDir>(), QList<Tag>()));
 }
 
-Sample const* SamplesModel::getSample(QModelIndex const& index)
+Sample* SamplesModel::getSample(QModelIndex const& index)
 {
     return static_cast<Sample*>(index.internalPointer());
+}
+
+bool SamplesModel::addRating(QModelIndex const& index, QVariant const& rating)
+{
+    auto sample = getSample(index);
+    if (!sample) {
+        return false;
+    }
+
+    auto success = db.addRating(*sample, rating);
+    if (success) {
+        sample->rating = rating;
+        auto changedIndex = this->index(index.row(), 1, index.parent());
+        emit dataChanged(changedIndex, changedIndex);
+    }
+
+    return success;
 }
 
 void SamplesModel::setSamples(QList<Sample> const* samples)

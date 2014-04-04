@@ -137,7 +137,24 @@
     <property name="title">
      <string>Edit</string>
     </property>
+    <widget class="QMenu" name="menuRate">
+     <property name="title">
+      <string>Set Rating</string>
+     </property>
+     <addaction name="actionUnrated"/>
+     <addaction name="actionRate_10"/>
+     <addaction name="actionRate_20"/>
+     <addaction name="actionRate_30"/>
+     <addaction name="actionRate_40"/>
+     <addaction name="actionRate_50"/>
+     <addaction name="actionRate_60"/>
+     <addaction name="actionRate_70"/>
+     <addaction name="actionRate_80"/>
+     <addaction name="actionRate_90"/>
+     <addaction name="actionRate_100"/>
+    </widget>
     <addaction name="actionTags"/>
+    <addaction name="menuRate"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
@@ -198,6 +215,97 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionUnrated">
+   <property name="text">
+    <string>Unrated</string>
+   </property>
+   <property name="shortcut">
+    <string>`</string>
+   </property>
+  </action>
+  <action name="actionRate_10">
+   <property name="text">
+    <string>Rate 10</string>
+   </property>
+   <property name="toolTip">
+    <string>Rate 10</string>
+   </property>
+   <property name="shortcut">
+    <string>1</string>
+   </property>
+  </action>
+  <action name="actionRate_20">
+   <property name="text">
+    <string>Rate 20</string>
+   </property>
+   <property name="shortcut">
+    <string>2</string>
+   </property>
+  </action>
+  <action name="actionRate_30">
+   <property name="text">
+    <string>Rate 30</string>
+   </property>
+   <property name="shortcut">
+    <string>3</string>
+   </property>
+  </action>
+  <action name="actionRate_40">
+   <property name="text">
+    <string>Rate 40</string>
+   </property>
+   <property name="shortcut">
+    <string>4</string>
+   </property>
+  </action>
+  <action name="actionRate_50">
+   <property name="text">
+    <string>Rate 50</string>
+   </property>
+   <property name="shortcut">
+    <string>5</string>
+   </property>
+  </action>
+  <action name="actionRate_60">
+   <property name="text">
+    <string>Rate 60</string>
+   </property>
+   <property name="shortcut">
+    <string>6</string>
+   </property>
+  </action>
+  <action name="actionRate_70">
+   <property name="text">
+    <string>Rate 70</string>
+   </property>
+   <property name="shortcut">
+    <string>7</string>
+   </property>
+  </action>
+  <action name="actionRate_80">
+   <property name="text">
+    <string>Rate 80</string>
+   </property>
+   <property name="shortcut">
+    <string>8</string>
+   </property>
+  </action>
+  <action name="actionRate_90">
+   <property name="text">
+    <string>Rate 90</string>
+   </property>
+   <property name="shortcut">
+    <string>9</string>
+   </property>
+  </action>
+  <action name="actionRate_100">
+   <property name="text">
+    <string>Rate 100</string>
+   </property>
+   <property name="shortcut">
+    <string>0</string>
    </property>
   </action>
  </widget>

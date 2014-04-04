@@ -35,7 +35,7 @@ bool Database::createTables()
 bool Database::addRating(Sample& sample, QVariant const& rating)
 {
     QSqlQuery query;
-    if (rating == QVariant()) {
+    if (rating == QVariant(QVariant::Int)) {
         query.prepare("UPDATE samples SET rating = NULL WHERE id = ?");
     } else {
         query.prepare("UPDATE samples SET rating = ? WHERE id = ?");
@@ -598,7 +598,7 @@ QList<Sample> Database::getFilteredSamples(
             query.value(3).toString(),
             query.value(4).toString(),
             query.value(5).toString(),
-            query.value(6).toString()
+            query.value(6)
             );
     }
 
