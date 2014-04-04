@@ -48,7 +48,8 @@ HEADERS  += \
     main_window.h \
     line_edit_dialog.h \
     expanding_tree_view.h \
-    reparent_tag_dialog.h
+    reparent_tag_dialog.h \
+    setting_names.h
 
 FORMS    += \
     edit_tags_dialog.ui \

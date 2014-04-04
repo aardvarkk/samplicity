@@ -30,12 +30,24 @@ bool SamplesModel::addRating(QModelIndex const& index, QVariant const& rating)
 
     auto success = db.addRating(*sample, rating);
     if (success) {
-        sample->rating = rating;
+        db.getRating(*sample, sample->rating);
         auto changedIndex = this->index(index.row(), 1, index.parent());
         emit dataChanged(changedIndex, changedIndex);
     }
 
     return success;
+}
+
+bool SamplesModel::adjustRating(QModelIndex const& index, int adjustment)
+{
+    auto sample = getSample(index);
+    if (!sample) {
+        return false;
+    }
+
+    QVariant rating;
+    auto success = db.getRating(*sample, rating);
+    return addRating(index, rating == QVariant(QVariant::Int) ? 1 : rating.toInt()+adjustment);
 }
 
 void SamplesModel::setSamples(QList<Sample> const* samples)

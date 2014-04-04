@@ -34,16 +34,19 @@ bool Database::createTables()
 
 bool Database::addRating(Sample& sample, QVariant const& rating)
 {
+    QVariant newRating = rating;
+
     QSqlQuery query;
-    if (rating == QVariant(QVariant::Int)) {
+    if (newRating == QVariant(QVariant::Int)) {
         query.prepare("UPDATE samples SET rating = NULL WHERE id = ?");
     } else {
+        newRating = qBound(0, newRating.toInt(), 100);
         query.prepare("UPDATE samples SET rating = ? WHERE id = ?");
-        query.addBindValue(rating);
+        query.addBindValue(newRating);
     }
     query.addBindValue(sample.id);
     if (query.exec()) {
-        sample.rating = rating;
+        sample.rating = newRating;
         return true;
     }
     return false;

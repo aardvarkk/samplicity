@@ -8,6 +8,7 @@
 #include "main_window.h"
 #include "ui_main_window.h"
 #include "edit_tags_dialog.h"
+#include "setting_names.h"
 
 #include "modeltest.h"
 
@@ -34,7 +35,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     // Default settings
-    ui->actionLoop_Playback->setChecked(settings->value("loopPlayback", false).toBool());
+    ui->actionLoop_Playback->setChecked(settings->value(LOOP_PLAYBACK, false).toBool());
+    ui->actionDynamic_Sorting->setChecked(settings->value(DYNAMIC_SORTING, false).toBool());
 
     auto tagMode = settings->value("tagMode", TagMode::Filter).toInt();
     ui->filterRadioButton->setChecked(tagMode == TagMode::Filter);
@@ -248,8 +250,14 @@ void MainWindow::on_actionAddFile_triggered()
 
 void MainWindow::on_actionLoop_Playback_toggled(bool checked)
 {
-    settings->setValue("loopPlayback", checked);
+    settings->setValue(LOOP_PLAYBACK, checked);
     audioPlayer->setLoop(checked);
+}
+
+void MainWindow::on_actionDynamic_Sorting_toggled(bool checked)
+{
+    settings->setValue(DYNAMIC_SORTING, checked);
+    samplesProxyModel.setDynamicSortFilter(checked);
 }
 
 void MainWindow::on_actionTags_triggered()
@@ -373,4 +381,18 @@ void MainWindow::addCurrentSampleRating(QVariant const& rating)
                 );
 }
 
+void MainWindow::on_actionIncrease_Rating_triggered()
+{
+    samplesModel->adjustRating(
+                samplesProxyModel.mapToSource(ui->samplesTreeView->currentIndex()),
+                +1
+                );
+}
 
+void MainWindow::on_actionDescrease_Rating_triggered()
+{
+    samplesModel->adjustRating(
+                samplesProxyModel.mapToSource(ui->samplesTreeView->currentIndex()),
+                -1
+                );
+}

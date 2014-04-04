@@ -64,6 +64,12 @@ private slots:
     void on_actionRate_90_triggered();
     void on_actionRate_100_triggered();
 
+    void on_actionIncrease_Rating_triggered();
+
+    void on_actionDescrease_Rating_triggered();
+
+    void on_actionDynamic_Sorting_toggled(bool arg1);
+
 private:
     void filterSamples();
 

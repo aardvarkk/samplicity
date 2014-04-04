@@ -28,6 +28,7 @@ public:
 
     Sample* getSample(QModelIndex const& index);
     bool addRating(QModelIndex const& index, QVariant const& rating);
+    bool adjustRating(QModelIndex const& index, int adjustment);
 
 public slots:
     void reset();

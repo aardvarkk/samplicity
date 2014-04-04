@@ -168,6 +168,12 @@ private slots:
         QVERIFY(db->addRating(sample, QVariant(QVariant::Int)));
         QVERIFY(db->getRating(sample, rating));
         QVERIFY(rating.isNull());
+        QVERIFY(db->addRating(sample, 105));
+        QVERIFY(db->getRating(sample, rating));
+        QVERIFY(rating.toInt() == 100);
+        QVERIFY(db->addRating(sample, -10));
+        QVERIFY(db->getRating(sample, rating));
+        QVERIFY(rating.toInt() == 0);
     }
 
     void cleanupTestCase()

@@ -152,6 +152,8 @@
      <addaction name="actionRate_80"/>
      <addaction name="actionRate_90"/>
      <addaction name="actionRate_100"/>
+     <addaction name="actionIncrease_Rating"/>
+     <addaction name="actionDescrease_Rating"/>
     </widget>
     <addaction name="actionTags"/>
     <addaction name="menuRate"/>
@@ -161,6 +163,7 @@
      <string>Options</string>
     </property>
     <addaction name="actionLoop_Playback"/>
+    <addaction name="actionDynamic_Sorting"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -306,6 +309,36 @@
    </property>
    <property name="shortcut">
     <string>0</string>
+   </property>
+  </action>
+  <action name="actionIncrease_Rating">
+   <property name="text">
+    <string>Increase Rating</string>
+   </property>
+   <property name="shortcut">
+    <string>+</string>
+   </property>
+  </action>
+  <action name="actionDescrease_Rating">
+   <property name="text">
+    <string>Descrease Rating</string>
+   </property>
+   <property name="shortcut">
+    <string>-</string>
+   </property>
+  </action>
+  <action name="actionDynamic_Sorting">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dynamic Sorting</string>
+   </property>
+   <property name="toolTip">
+    <string>&amp;Dynamic Sorting</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
    </property>
   </action>
  </widget>
