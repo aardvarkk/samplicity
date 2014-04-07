@@ -15,6 +15,13 @@ AudioPlayer::AudioPlayer(bool loop) : loop(loop)
 #endif
 }
 
+AudioPlayer::~AudioPlayer()
+{
+#ifdef IRRKLANG
+    delete soundEngine;
+#endif
+}
+
 void AudioPlayer::play(QString const& path)
 {
     qDebug() << __FUNCSIG__;
@@ -37,7 +44,17 @@ void AudioPlayer::play(QString const& path)
 #endif
 
 #ifdef IRRKLANG
-    soundEngine->play2D(path.toLocal8Bit().constData());
+    soundEngine->stopAllSounds();
+    soundEngine->play2D(path.toLocal8Bit().constData(), this->loop);
+#endif
+}
+
+void AudioPlayer::setVolume(int volume)
+{
+    volume = qBound(0, volume, 99);
+
+#ifdef IRRKLANG
+    soundEngine->setSoundVolume(static_cast<irrklang::ik_f32>(volume) / 99);
 #endif
 }
 
@@ -65,6 +82,10 @@ void AudioPlayer::setLoop(bool loop)
         soundEffect->setLoopCount(this->loop ? QSoundEffect::Infinite : 0);
     }
 #endif
+
+#ifdef IRRKLANG
+    if (!this->loop) {
+        soundEngine->stopAllSounds();
+    }
+#endif
 }
-
-

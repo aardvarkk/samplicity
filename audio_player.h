@@ -18,14 +18,20 @@
 #include <irrKlang.h>
 #endif
 
-class AudioPlayer
+class AudioPlayer : public QObject
 {
+    Q_OBJECT
+
 public:
     AudioPlayer(bool loop = false);
+    ~AudioPlayer();
 
     void play(QString const& path);
     void setLoop(bool loop);
     void stop();
+
+public slots:
+    void setVolume(int volume);
 
 private:
 

@@ -2,41 +2,14 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>400</width>
-    <height>300</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Samplicity</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTreeView" name="dirsTreeView">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>1</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="selectionMode">
-       <enum>QAbstractItemView::ExtendedSelection</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QWidget" name="tags" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>1</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+     <widget class="QWidget" name="controlWidget" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -50,21 +23,27 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QTreeView" name="tagsTreeView">
+        <widget class="QTreeView" name="dirsTreeView">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
+           <horstretch>1</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="selectionMode">
-          <enum>QAbstractItemView::MultiSelection</enum>
+          <enum>QAbstractItemView::ExtendedSelection</enum>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="tagsModes" native="true">
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <widget class="QWidget" name="tags" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
           <property name="leftMargin">
            <number>0</number>
           </property>
@@ -78,39 +57,123 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QRadioButton" name="filterRadioButton">
-            <property name="text">
-             <string>Filter</string>
+           <widget class="QTreeView" name="tagsTreeView">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
-            <attribute name="buttonGroup">
-             <string notr="true">tagMode</string>
-            </attribute>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::MultiSelection</enum>
+            </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="applyRadioButton">
-            <property name="text">
-             <string>Apply</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">tagMode</string>
-            </attribute>
+           <widget class="QWidget" name="tagsModes" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="filterRadioButton">
+               <property name="text">
+                <string>Filter</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">tagMode</string>
+               </attribute>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="applyRadioButton">
+               <property name="text">
+                <string>Apply</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">tagMode</string>
+               </attribute>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
         </widget>
        </item>
+       <item>
+        <widget class="QTreeView" name="samplesTreeView">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>2</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
       </layout>
+      <zorder>samplesTreeView</zorder>
+      <zorder>tagsTreeView</zorder>
+      <zorder>applyRadioButton</zorder>
+      <zorder>dirsTreeView</zorder>
+      <zorder>filterRadioButton</zorder>
+      <zorder>tags</zorder>
+      <zorder>samplesTreeView</zorder>
+      <zorder>dirsTreeView</zorder>
      </widget>
     </item>
     <item>
-     <widget class="QTreeView" name="samplesTreeView">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>2</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
+     <widget class="QWidget" name="volumeWidget" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="volumeLabel">
+         <property name="text">
+          <string>Volume</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSlider" name="volumeSlider">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
@@ -120,7 +183,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
+     <width>798</width>
      <height>21</height>
     </rect>
    </property>

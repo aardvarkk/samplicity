@@ -34,10 +34,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Default settings
-    ui->actionLoop_Playback->setChecked(settings->value(LOOP_PLAYBACK, false).toBool());
-    ui->actionDynamic_Sorting->setChecked(settings->value(DYNAMIC_SORTING, false).toBool());
-
     auto tagMode = settings->value("tagMode", TagMode::Filter).toInt();
     ui->filterRadioButton->setChecked(tagMode == TagMode::Filter);
     ui->applyRadioButton->setChecked(tagMode == TagMode::Apply);
@@ -117,6 +113,39 @@ MainWindow::MainWindow(QWidget *parent) :
     restoreGeometry(settings->value("geometry").toByteArray());
     restoreState(settings->value("windowState").toByteArray());
     ui->samplesTreeView->header()->restoreState(settings->value("samplesTreeViewState").toByteArray());
+
+    // Change volume in audio player
+    QObject::connect(
+                ui->volumeSlider,
+                SIGNAL(valueChanged(int)),
+                audioPlayer,
+                SLOT(setVolume(int))
+                );
+
+    // Default settings
+    ui->actionLoop_Playback->setChecked(settings->value(LOOP_PLAYBACK, false).toBool());
+    ui->actionDynamic_Sorting->setChecked(settings->value(DYNAMIC_SORTING, false).toBool());
+    ui->volumeSlider->setValue(settings->value(VOLUME, 99).toInt());
+}
+
+MainWindow::~MainWindow()
+{
+    delete audioPlayer;
+    delete samplesModel;
+    delete directoriesModel;
+    delete undoStack;
+    delete db;
+    delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+    settings->setValue(DYNAMIC_SORTING, ui->actionDynamic_Sorting->isChecked());
+    settings->setValue(LOOP_PLAYBACK, ui->actionLoop_Playback->isChecked());
+    settings->setValue(VOLUME, ui->volumeSlider->value());
+    settings->setValue("geometry", saveGeometry());
+    settings->setValue("windowState", saveState());
+    settings->setValue("samplesTreeViewState", ui->samplesTreeView->header()->saveState());
 }
 
 void MainWindow::tagSelectionChanged(QItemSelection const& selected, QItemSelection const& deselected)
@@ -188,16 +217,6 @@ void MainWindow::sampleSelectionChanged(QModelIndex const& selected, QModelIndex
     audioPlayer->play(sample->fullPath());
 }
 
-MainWindow::~MainWindow()
-{
-    delete audioPlayer;
-    delete samplesModel;
-    delete directoriesModel;
-    delete undoStack;
-    delete db;
-    delete ui;
-}
-
 void MainWindow::filterSamples()
 {
     // Get all selected directories
@@ -250,13 +269,11 @@ void MainWindow::on_actionAddFile_triggered()
 
 void MainWindow::on_actionLoop_Playback_toggled(bool checked)
 {
-    settings->setValue(LOOP_PLAYBACK, checked);
     audioPlayer->setLoop(checked);
 }
 
 void MainWindow::on_actionDynamic_Sorting_toggled(bool checked)
 {
-    settings->setValue(DYNAMIC_SORTING, checked);
     samplesProxyModel.setDynamicSortFilter(checked);
 }
 
@@ -275,14 +292,25 @@ void MainWindow::on_actionOpen_sample_triggered()
         return;
     }
 
-    auto s = static_cast<Sample*>(selected.last().internalPointer());
+    for (auto sel : selected) {
 
-    #ifdef Q_OS_WIN
-    QProcess::startDetached(
-                "explorer",
-                QStringList() << "/select," << QDir::toNativeSeparators(s->fullPath())
-                );
-    #endif
+        // Have to map from proxy model to source
+        sel = samplesProxyModel.mapToSource(sel);
+
+        // Only want to follow selected paths, not ratings, etc.
+        if (sel.column() != 0) {
+            continue;
+        }
+
+        auto sample = static_cast<Sample*>(sel.internalPointer());
+
+        #ifdef Q_OS_WIN
+        QProcess::startDetached(
+                    "explorer",
+                    QStringList() << "/select," << QDir::toNativeSeparators(sample->fullPath())
+                    );
+        #endif
+    }
 }
 
 void MainWindow::tagModeToggled(bool checked)
@@ -309,13 +337,6 @@ void MainWindow::tagModeToggled(bool checked)
     default:
         return;
     }
-}
-
-void MainWindow::closeEvent(QCloseEvent* event)
-{
-    settings->setValue("geometry", saveGeometry());
-    settings->setValue("windowState", saveState());
-    settings->setValue("samplesTreeViewState", ui->samplesTreeView->header()->saveState());
 }
 
 void MainWindow::on_actionUnrated_triggered()
