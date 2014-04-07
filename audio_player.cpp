@@ -2,10 +2,17 @@
 
 #include "audio_player.h"
 
-//#define MEDIAPLAYER
-
-AudioPlayer::AudioPlayer(bool loop) : mediaPlayer(nullptr), soundEffect(nullptr), loop(loop)
+AudioPlayer::AudioPlayer(bool loop) : loop(loop)
 {
+#ifdef MEDIAPLAYER
+    mediaPlayer = nullptr;
+#endif
+#ifdef SOUNDEFFECT
+    soundEffect = nullptr;
+#endif
+#ifdef IRRKLANG
+    soundEngine = irrklang::createIrrKlangDevice();
+#endif
 }
 
 void AudioPlayer::play(QString const& path)
@@ -18,13 +25,19 @@ void AudioPlayer::play(QString const& path)
     mediaPlayer = new QMediaPlayer;
     mediaPlayer->setMedia(QUrl::fromLocalFile(path));
     mediaPlayer->play();
-#else
+#endif
+
+#ifdef SOUNDEFFECT
     // Must reset sound effect to deal with sample rate changes
     delete soundEffect;
     soundEffect = new QSoundEffect;
     soundEffect->setSource(QUrl::fromLocalFile(path));
     setLoop(this->loop);
     soundEffect->play();
+#endif
+
+#ifdef IRRKLANG
+    soundEngine->play2D(path.toLocal8Bit().constData());
 #endif
 }
 
@@ -34,7 +47,9 @@ void AudioPlayer::stop()
     if (mediaPlayer) {
         mediaPlayer->stop();
     }
-#else
+#endif
+
+#ifdef SOUNDEFFECT
     if (soundEffect) {
         soundEffect->stop();
     }
@@ -44,9 +59,12 @@ void AudioPlayer::stop()
 void AudioPlayer::setLoop(bool loop)
 {
     this->loop = loop;
+
+#ifdef SOUNDEFFECT
     if (soundEffect) {
         soundEffect->setLoopCount(this->loop ? QSoundEffect::Infinite : 0);
     }
+#endif
 }
 
 

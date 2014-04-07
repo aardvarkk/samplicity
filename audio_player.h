@@ -2,8 +2,21 @@
 #define AUDIO_PLAYER_H
 
 #include <QFile>
+
+//#define MEDIAPLAYER
+#ifdef MEDIAPLAYER
 #include <QMediaPlayer>
+#endif
+
+//#define SOUNDEFFECT
+#ifdef SOUNDEFFECT
 #include <QSoundEffect>
+#endif
+
+#define IRRKLANG
+#ifdef IRRKLANG
+#include <irrKlang.h>
+#endif
 
 class AudioPlayer
 {
@@ -15,8 +28,19 @@ public:
     void stop();
 
 private:
+
+#ifdef MEDIAPLAYER
     QMediaPlayer* mediaPlayer;
+#endif
+
+#ifdef SOUNDEFFECT
     QSoundEffect* soundEffect;
+#endif
+
+#ifdef IRRKLANG
+    irrklang::ISoundEngine* soundEngine;
+#endif
+
     bool loop;
 };
 

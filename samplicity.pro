@@ -11,6 +11,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = samplicity
 TEMPLATE = app
 
+INCLUDEPATH += irrKlang-1.4.0/include
+
+LIBS += -L$$_PRO_FILE_PWD_/irrKlang-1.4.0/lib/Winx64-visualStudio/ -lirrKlang
 
 SOURCES += main.cpp\
     database.cpp \
