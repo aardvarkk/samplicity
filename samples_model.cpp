@@ -57,7 +57,11 @@ bool SamplesModel::renameSample(QModelIndex const& index, QString const& name)
         return false;
     }
 
-    return db.renameSample(*sample, name);
+    auto success = db.renameSample(*sample, name);
+    if (success) {
+        emit dataChanged(index, index);
+    }
+    return success;
 }
 
 void SamplesModel::setSamples(QList<Sample> const* samples)

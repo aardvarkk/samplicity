@@ -219,7 +219,7 @@
     </property>
     <widget class="QMenu" name="menuRate">
      <property name="title">
-      <string>Set Rating</string>
+      <string>Set Sample Rating</string>
      </property>
      <addaction name="actionUnrated"/>
      <addaction name="actionRate_10"/>
