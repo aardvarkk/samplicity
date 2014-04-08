@@ -72,9 +72,15 @@ private slots:
 
     void on_actionRename_Sample_triggered();
 
+    void on_actionPlay_Sample_triggered();
+
+    void on_actionStop_Sample_triggered();
+
 private:
     void displayError(ErrorCode ec);
     void filterSamples();
+    void playSelectedSample(QModelIndex const& selected);
+    void stopSelectedSample(QModelIndex const& selected);
 
     QSettings* settings;
     Ui::MainWindow* ui;

@@ -15,13 +15,10 @@
 
 #include "modeltest.h"
 
-struct TagMode
+enum TagMode
 {
-    enum
-    {
-        Filter,
-        Apply
-    };
+    Filter,
+    Apply
 };
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -221,7 +218,7 @@ void MainWindow::displayError(ErrorCode ec)
     ui->statusBar->showMessage(msg);
 }
 
-void MainWindow::sampleSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected)
+void MainWindow::playSelectedSample(QModelIndex const& selected)
 {
     qDebug() << __FUNCSIG__;
 
@@ -236,17 +233,30 @@ void MainWindow::sampleSelectionChanged(QModelIndex const& selected, QModelIndex
 
     ui->fileLocationLabel->setText(sample->fullPath());
 
+    auto err = audioPlayer->play(sample->fullPath());
+    displayError(err);
+}
+
+void MainWindow::stopSelectedSample(QModelIndex const& selected)
+{
+    qDebug() << __FUNCSIG__;
+    audioPlayer->stop();
+}
+
+void MainWindow::sampleSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected)
+{
+    qDebug() << __FUNCSIG__;
+
     // If we're in "Apply" tag mode, we want to show the relevant tags for this sample
     if (settings->value("tagMode").toInt() == TagMode::Apply) {
+
         // Disable (then later re-enable) actually writing sample tags
         // If it's disabled, we won't try to change the tags when the tag selections change
+        auto sample = samplesModel->getSample(samplesProxyModel.mapToSource(selected));
         setApplyTagSelections(*sample);
     }
 
-    audioPlayer->stop();
-
-    auto err = audioPlayer->play(sample->fullPath());
-    displayError(err);
+    playSelectedSample(selected);
 }
 
 void MainWindow::filterSamples()
@@ -469,4 +479,22 @@ void MainWindow::on_actionRename_Sample_triggered()
         }
         QMessageBox::warning(this, tr("Warning"), tr("Error renaming sample"));
     }
+}
+
+void MainWindow::on_actionPlay_Sample_triggered()
+{
+    auto selected = ui->samplesTreeView->selectionModel()->selectedIndexes();
+    if (selected.empty()) {
+        return;
+    }
+    playSelectedSample(selected.first());
+}
+
+void MainWindow::on_actionStop_Sample_triggered()
+{
+    auto selected = ui->samplesTreeView->selectionModel()->selectedIndexes();
+    if (selected.empty()) {
+        return;
+    }
+    stopSelectedSample(selected.first());
 }

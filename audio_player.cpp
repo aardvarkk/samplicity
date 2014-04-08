@@ -77,6 +77,10 @@ void AudioPlayer::stop()
         soundEffect->stop();
     }
 #endif
+
+#ifdef IRRKLANG
+    soundEngine->stopAllSounds();
+#endif
 }
 
 void AudioPlayer::setLoop(bool loop)

@@ -236,8 +236,10 @@
      <addaction name="actionDescrease_Rating"/>
     </widget>
     <addaction name="actionTags"/>
-    <addaction name="menuRate"/>
+    <addaction name="actionPlay_Sample"/>
+    <addaction name="actionStop_Sample"/>
     <addaction name="actionRename_Sample"/>
+    <addaction name="menuRate"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
@@ -428,6 +430,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionPlay_Sample">
+   <property name="text">
+    <string>Play Sample</string>
+   </property>
+   <property name="shortcut">
+    <string>/</string>
+   </property>
+  </action>
+  <action name="actionStop_Sample">
+   <property name="text">
+    <string>Stop Sample</string>
+   </property>
+   <property name="shortcut">
+    <string>*</string>
    </property>
   </action>
  </widget>
