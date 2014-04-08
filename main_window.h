@@ -70,6 +70,8 @@ private slots:
 
     void on_actionDynamic_Sorting_toggled(bool arg1);
 
+    void on_actionRename_Sample_triggered();
+
 private:
     void displayError(ErrorCode ec);
     void filterSamples();

@@ -111,7 +111,7 @@ void EditTagsDialog::renameTag(bool checked)
         if (tagsModel->renameTag(w->tag, dialog.getText())) {
             return;
         }
-        QMessageBox::warning(this, tr("Warning"), tr("Error adding tag"));
+        QMessageBox::warning(this, tr("Warning"), tr("Error renaming tag"));
     }
 }
 

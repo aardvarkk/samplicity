@@ -91,6 +91,21 @@ Sample Database::getSample(QFile const& file)
     return sample;
 }
 
+bool Database::renameSample(Sample& sample, QString const& name)
+{
+    qDebug() << __FUNCSIG__;
+
+    QSqlQuery query;
+    query.prepare("UPDATE samples SET name = ? WHERE id = ?");
+    query.addBindValue(name);
+    query.addBindValue(sample.id);
+    auto success = query.exec();
+    if (success) {
+        sample.name = name;
+    }
+    return success;
+}
+
 bool Database::addSampleTag(Sample const& sample, Tag const& tag)
 {
     qDebug() << __FUNCSIG__;

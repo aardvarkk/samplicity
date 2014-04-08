@@ -1,12 +1,14 @@
 #include <QFileDialog>
 #include <QLayout>
 #include <QDesktopServices>
+#include <QMessageBox>
 #include <QUndoView>
 
 #include "command_add_directory.h"
 #include "command_add_file.h"
 #include "edit_tags_dialog.h"
 #include "error_code.h"
+#include "line_edit_dialog.h"
 #include "main_window.h"
 #include "ui_main_window.h"
 #include "setting_names.h"
@@ -446,4 +448,25 @@ void MainWindow::on_actionDescrease_Rating_triggered()
                 samplesProxyModel.mapToSource(ui->samplesTreeView->currentIndex()),
                 -1
                 );
+}
+
+void MainWindow::on_actionRename_Sample_triggered()
+{
+    auto selected = ui->samplesTreeView->selectionModel()->selectedIndexes();
+    if (selected.empty()) {
+        return;
+    }
+
+    auto sel = samplesProxyModel.mapToSource(selected.first());
+    auto sample = samplesModel->getSample(sel);
+
+    LineEditDialog dialog(*db, this);
+    dialog.setWindowTitle(tr("Rename Sample"));
+    dialog.setText(sample->name);
+    while (dialog.exec() == QDialog::Accepted) {
+        if (samplesModel->renameSample(sel, dialog.getText())) {
+            return;
+        }
+        QMessageBox::warning(this, tr("Warning"), tr("Error renaming sample"));
+    }
 }

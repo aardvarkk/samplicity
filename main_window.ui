@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>798</width>
+    <height>331</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Samplicity</string>
   </property>
@@ -134,11 +142,6 @@
         </widget>
        </item>
       </layout>
-      <zorder>samplesTreeView</zorder>
-      <zorder>tagsTreeView</zorder>
-      <zorder>applyRadioButton</zorder>
-      <zorder>dirsTreeView</zorder>
-      <zorder>filterRadioButton</zorder>
       <zorder>tags</zorder>
       <zorder>samplesTreeView</zorder>
       <zorder>dirsTreeView</zorder>
@@ -234,6 +237,7 @@
     </widget>
     <addaction name="actionTags"/>
     <addaction name="menuRate"/>
+    <addaction name="actionRename_Sample"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
@@ -416,6 +420,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionRename_Sample">
+   <property name="text">
+    <string>Rename Sample...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

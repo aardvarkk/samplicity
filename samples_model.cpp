@@ -50,6 +50,16 @@ bool SamplesModel::adjustRating(QModelIndex const& index, int adjustment)
     return addRating(index, rating == QVariant(QVariant::Int) ? 1 : rating.toInt()+adjustment);
 }
 
+bool SamplesModel::renameSample(QModelIndex const& index, QString const& name)
+{
+    auto sample = getSample(index);
+    if (!sample) {
+        return false;
+    }
+
+    return db.renameSample(*sample, name);
+}
+
 void SamplesModel::setSamples(QList<Sample> const* samples)
 {
     for (auto sample : items) {

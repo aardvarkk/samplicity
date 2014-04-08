@@ -27,6 +27,7 @@ public:
             ) const;
 
     Sample getSample(QFile const& file);
+    bool renameSample(Sample& sample, QString const& name);
     bool addSampleTag(Sample const& sample, Tag const& tag);
     bool removeSampleTag(Sample const& sample, Tag const& tag);
     QList<Tag> getSampleTags(Sample const& sample);
