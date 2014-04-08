@@ -1,5 +1,6 @@
 #include "database.h"
 #include "filesystem.h"
+#include "hasher.h"
 #include "utils.h"
 
 Database::Database(QString const& filename)
@@ -25,10 +26,10 @@ bool Database::createTables()
 {
     auto success = true;
     QSqlQuery query;
-    success &= query.exec("CREATE TABLE IF NOT EXISTS dirs (id INTEGER PRIMARY KEY, parent_id INTEGER, path TEXT UNIQUE)");
-    success &= query.exec("CREATE TABLE IF NOT EXISTS samples (id INTEGER PRIMARY KEY, dir_id INTEGER, name TEXT, filename TEXT, rating INTEGER, UNIQUE (dir_id, name))");
-    success &= query.exec("CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY, parent_id INTEGER, name TEXT, UNIQUE (parent_id, name))");
-    success &= query.exec("CREATE TABLE IF NOT EXISTS sample_tags (id INTEGER PRIMARY KEY, sample_id INTEGER, tag_id INTEGER, UNIQUE (sample_id, tag_id))");
+    success &= query.exec("CREATE TABLE IF NOT EXISTS dirs (id INTEGER PRIMARY KEY, path TEXT UNIQUE NOT NULL, parent_id INTEGER)");
+    success &= query.exec("CREATE TABLE IF NOT EXISTS samples (id INTEGER PRIMARY KEY, dir_id INTEGER NOT NULL, name TEXT NOT NULL, filename TEXT NOT NULL, hash BLOB UNIQUE NOT NULL, rating INTEGER, UNIQUE (dir_id, name))");
+    success &= query.exec("CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY, name TEXT NOT NULL, parent_id INTEGER, UNIQUE (parent_id, name))");
+    success &= query.exec("CREATE TABLE IF NOT EXISTS sample_tags (id INTEGER PRIMARY KEY, sample_id INTEGER NOT NULL, tag_id INTEGER NOT NULL, UNIQUE (sample_id, tag_id))");
     return success;
 }
 
@@ -369,7 +370,7 @@ bool Database::reparentTag(Tag& tag, int parent_id)
     return false;
 }
 
-bool Database::addFile(QFile const& file)
+bool Database::addFile(QFile& file)
 {
     qDebug() << __FUNCSIG__;
     qDebug() << file.fileName();
@@ -424,11 +425,37 @@ bool Database::addFile(QFile const& file)
         dir_id = query.value(0).toInt();
     }
 
-    // Add a new sample record
-    query.prepare("INSERT INTO samples (dir_id, name, filename) VALUES (?,?,?)");
-    query.addBindValue(dir_id);
-    query.addBindValue(fileInfo.fileName());
-    query.addBindValue(fileInfo.fileName());
+    // Get the file hash
+    QByteArray hash;
+    auto ec = Hasher::getFileHash(file, hash);
+    if (ec.code) {
+        return false;
+    }
+
+    // If the sample for this file exists, just update the location to the new one
+    int id = -1;
+    query.prepare("SELECT id FROM samples WHERE hash = ?");
+    query.addBindValue(hash);
+    query.exec();
+    while (query.next()) {
+        id = query.value(0).toInt();
+    }
+
+    // If we moved the file, just update with the new location
+    if (id > 0) {
+        query.prepare("UPDATE samples SET dir_id = ?, filename = ? WHERE id = ?");
+        query.addBindValue(dir_id);
+        query.addBindValue(fileInfo.fileName());
+        query.addBindValue(id);
+    } else {
+        // Add a new sample record
+        query.prepare("INSERT INTO samples (dir_id, name, filename, hash) VALUES (?,?,?,?)");
+        query.addBindValue(dir_id);
+        query.addBindValue(fileInfo.fileName());
+        query.addBindValue(fileInfo.fileName());
+        query.addBindValue(hash);
+    }
+
     auto success = query.exec();
 
     if (QObject::sender() == nullptr) {

@@ -7,7 +7,8 @@ struct ErrorCode
 
     enum {
       Success,
-      FileNotFound
+      FileNotFound,
+      ReadError
     };
 
     int code;

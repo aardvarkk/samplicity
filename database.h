@@ -50,7 +50,7 @@ public:
     void cleanup();
 
 public slots:
-    bool addFile(QFile const& file);
+    bool addFile(QFile& file);
     bool removeFile(QFile const& file);
 
 protected:

@@ -8,6 +8,15 @@ class SamplicityTests : public QObject
     Q_OBJECT
 
 private slots:
+
+    void makeFakeFile(QString const& name)
+    {
+        QFile fake(name);
+        fake.open(QFile::ReadWrite);
+        fake.write(name.toLocal8Bit());
+        fake.close();
+    }
+
     void initTestCase()
     {
         QDir().remove("test.db");
@@ -78,8 +87,10 @@ private slots:
     void tagSample()
     {
         // Create a file to add
+        makeFakeFile("fake.wav");
         QFile fake("fake.wav");
-        fake.open(QFile::WriteOnly);
+        fake.open(QFile::ReadOnly);
+
         db->addFile(fake);
         auto sample = db->getSample(fake);
         QVERIFY(sample.id > 0);
@@ -98,8 +109,10 @@ private slots:
     void removeSampleTag()
     {
         // Should remove the tag from the given sample
+        makeFakeFile("tagged.wav");
         QFile file("tagged.wav");
-        file.open(QFile::WriteOnly);
+        file.open(QFile::ReadOnly);
+
         db->addFile(file);
         auto sample = db->getSample(file);
         auto tag = db->addTag("delete me");
@@ -111,8 +124,13 @@ private slots:
 
     void removeTag()
     {
+        makeFakeFile("s1.wav");
         QFile f1("s1.wav");
+        f1.open(QFile::ReadOnly);
+        makeFakeFile("s2.wav");
         QFile f2("s2.wav");
+        f2.open(QFile::ReadOnly);
+
         db->addFile(f1);
         db->addFile(f2);
         auto s1 = db->getSample(f1);
@@ -156,8 +174,10 @@ private slots:
         QVariant rating;
 
         // Should remove the tag from the given sample
+        makeFakeFile("toRate.wav");
         QFile file("toRate.wav");
-        file.open(QFile::WriteOnly);
+        file.open(QFile::ReadOnly);
+
         QVERIFY(db->addFile(file));
         auto sample = db->getSample(file);
         QVERIFY(db->getRating(sample, rating));
@@ -174,6 +194,49 @@ private slots:
         QVERIFY(db->addRating(sample, -10));
         QVERIFY(db->getRating(sample, rating));
         QVERIFY(rating.toInt() == 0);
+    }
+
+    void moveSample()
+    {
+        QDir dir;
+
+        // Clean up from the last test if we failed
+        if (QFile::exists("subfolder/newname.wav")) {
+            QVERIFY(dir.remove("subfolder/newname.wav"));
+        }
+
+        makeFakeFile("original.wav");
+        QFile file("original.wav");
+        file.open(QFile::ReadOnly);
+
+        QVERIFY(db->addFile(file));
+        auto sample = db->getSample(file);
+        QVERIFY(sample.name == "original.wav");
+        QVERIFY(sample.filename == "original.wav");
+        QVERIFY(sample.fullPath() == dir.absolutePath() + "/original.wav");
+
+        QVERIFY(dir.mkpath("subfolder"));
+        file.close();
+
+        QVERIFY(dir.rename("original.wav", "subfolder/newname.wav"));
+
+        QFile newname("subfolder/newname.wav");
+        QVERIFY(newname.open(QFile::ReadOnly));
+        auto pre = db->getFilteredSamples(QList<QDir>(), QList<Tag>());
+
+        QVERIFY(db->addFile(newname));
+        sample = db->getSample(newname);
+
+        // Sample will keep its original name, but be in a new location
+        QVERIFY(sample.name == "original.wav");
+        QVERIFY(sample.filename == "newname.wav");
+        QVERIFY(sample.fullPath() == dir.absolutePath() + "/subfolder/newname.wav");
+
+        auto pst = db->getFilteredSamples(QList<QDir>(), QList<Tag>());
+        QVERIFY(pst.count() == pre.count());
+
+        newname.close();
+        QVERIFY(dir.remove("subfolder/newname.wav"));
     }
 
     void cleanupTestCase()

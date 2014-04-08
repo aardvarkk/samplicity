@@ -17,6 +17,7 @@ TEMPLATE = app
 
 HEADERS += ../database.h \
     ../filesystem.h \
+    ../hasher.h \
     ../sample.h \
     ../tag.h \
     ../utils.h
@@ -26,6 +27,7 @@ SOURCES += \
     samplicity_tests.cpp \
     ../database.cpp \
     ../filesystem.cpp \
+    ../hasher.cpp \
     ../sample.cpp \
     ../tag.cpp \
     ../utils.cpp

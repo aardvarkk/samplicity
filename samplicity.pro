@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     main_window.cpp \
     line_edit_dialog.cpp \
     expanding_tree_view.cpp \
-    reparent_tag_dialog.cpp
+    reparent_tag_dialog.cpp \
+    hasher.cpp
 
 HEADERS  += \
     database.h \
@@ -53,7 +54,8 @@ HEADERS  += \
     expanding_tree_view.h \
     reparent_tag_dialog.h \
     setting_names.h \
-    error_code.h
+    error_code.h \
+    hasher.h
 
 FORMS    += \
     edit_tags_dialog.ui \
