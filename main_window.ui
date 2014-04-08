@@ -145,8 +145,8 @@
      </widget>
     </item>
     <item>
-     <widget class="QWidget" name="volumeWidget" native="true">
-      <layout class="QHBoxLayout" name="horizontalLayout">
+     <widget class="QWidget" name="infoWidget" native="true">
+      <layout class="QFormLayout" name="formLayout">
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -159,17 +159,31 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <item>
+       <item row="1" column="0">
         <widget class="QLabel" name="volumeLabel">
          <property name="text">
           <string>Volume</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="1" column="1">
         <widget class="QSlider" name="volumeSlider">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="fileLabel">
+         <property name="text">
+          <string>File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="fileLocationLabel">
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>

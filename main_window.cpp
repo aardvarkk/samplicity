@@ -35,6 +35,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // Initialize default values
+    settings->value(LOOP_PLAYBACK, false);
+    settings->value(DYNAMIC_SORTING, false);
+    settings->value(VOLUME, 99);
+
     auto tagMode = settings->value("tagMode", TagMode::Filter).toInt();
     ui->filterRadioButton->setChecked(tagMode == TagMode::Filter);
     ui->applyRadioButton->setChecked(tagMode == TagMode::Apply);
@@ -61,10 +66,10 @@ MainWindow::MainWindow(QWidget *parent) :
 //    ui->samplesTreeView->setModel(samplesModel);
     samplesProxyModel.setSourceModel(samplesModel);
     samplesProxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
+    samplesProxyModel.sort(0, Qt::AscendingOrder);
+    samplesProxyModel.setDynamicSortFilter(settings->value(DYNAMIC_SORTING).toBool());
     ui->samplesTreeView->setModel(&samplesProxyModel);
     ui->samplesTreeView->setSortingEnabled(true);
-    samplesProxyModel.sort(0, Qt::AscendingOrder);
-    samplesProxyModel.setDynamicSortFilter(false);
     auto modelTest = new ModelTest(samplesModel, this);
 
     // Make it such that when any directories/files are added or changed,
@@ -124,9 +129,9 @@ MainWindow::MainWindow(QWidget *parent) :
                 );
 
     // Default settings
-    ui->actionLoop_Playback->setChecked(settings->value(LOOP_PLAYBACK, false).toBool());
-    ui->actionDynamic_Sorting->setChecked(settings->value(DYNAMIC_SORTING, false).toBool());
-    ui->volumeSlider->setValue(settings->value(VOLUME, 99).toInt());
+    ui->actionLoop_Playback->setChecked(settings->value(LOOP_PLAYBACK).toBool());
+    ui->actionDynamic_Sorting->setChecked(settings->value(DYNAMIC_SORTING).toBool());
+    ui->volumeSlider->setValue(settings->value(VOLUME).toInt());
 }
 
 MainWindow::~MainWindow()
@@ -222,14 +227,20 @@ void MainWindow::sampleSelectionChanged(QModelIndex const& selected, QModelIndex
         return;
     }
 
+    auto sample = samplesModel->getSample(samplesProxyModel.mapToSource(selected));
+    if (!sample) {
+        return;
+    }
+
+    ui->fileLocationLabel->setText(sample->fullPath());
+
     // If we're in "Apply" tag mode, we want to show the relevant tags for this sample
     if (settings->value("tagMode").toInt() == TagMode::Apply) {
         // Disable (then later re-enable) actually writing sample tags
         // If it's disabled, we won't try to change the tags when the tag selections change
-        setApplyTagSelections(*static_cast<Sample*>(selected.internalPointer()));
+        setApplyTagSelections(*sample);
     }
 
-    auto sample = samplesModel->getSample(samplesProxyModel.mapToSource(selected));
     audioPlayer->stop();
 
     auto err = audioPlayer->play(sample->fullPath());

@@ -491,7 +491,12 @@ bool Database::addDirectory(QDir const& dir)
 
     db.transaction();
     Filesystem fs;
-    QObject::connect(&fs, SIGNAL(foundFile(QFile)), this, SLOT(addFile(QFile)));
+    QObject::connect(
+                &fs,
+                SIGNAL(foundFile(QFile&)),
+                this,
+                SLOT(addFile(QFile&))
+                );
     auto success = fs.findFiles(dir, &Utils::getSupportedNameFilters()) ? db.commit() : db.rollback();
     return success;
 }
@@ -503,7 +508,12 @@ bool Database::removeDirectory(const QDir &dir)
 
     db.transaction();
     Filesystem fs;
-    QObject::connect(&fs, SIGNAL(foundFile(QFile)), this, SLOT(removeFile(QFile)));
+    QObject::connect(
+                &fs,
+                SIGNAL(foundFile(QFile&)),
+                this,
+                SLOT(removeFile(QFile&))
+                );
     auto success = fs.findFiles(dir, &Utils::getSupportedNameFilters()) ? db.commit() : db.rollback();
     return success;
 }

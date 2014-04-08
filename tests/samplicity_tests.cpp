@@ -89,7 +89,6 @@ private slots:
         // Create a file to add
         makeFakeFile("fake.wav");
         QFile fake("fake.wav");
-        fake.open(QFile::ReadOnly);
 
         db->addFile(fake);
         auto sample = db->getSample(fake);
@@ -111,7 +110,6 @@ private slots:
         // Should remove the tag from the given sample
         makeFakeFile("tagged.wav");
         QFile file("tagged.wav");
-        file.open(QFile::ReadOnly);
 
         db->addFile(file);
         auto sample = db->getSample(file);
@@ -126,10 +124,8 @@ private slots:
     {
         makeFakeFile("s1.wav");
         QFile f1("s1.wav");
-        f1.open(QFile::ReadOnly);
         makeFakeFile("s2.wav");
         QFile f2("s2.wav");
-        f2.open(QFile::ReadOnly);
 
         db->addFile(f1);
         db->addFile(f2);
@@ -176,7 +172,6 @@ private slots:
         // Should remove the tag from the given sample
         makeFakeFile("toRate.wav");
         QFile file("toRate.wav");
-        file.open(QFile::ReadOnly);
 
         QVERIFY(db->addFile(file));
         auto sample = db->getSample(file);
@@ -207,7 +202,6 @@ private slots:
 
         makeFakeFile("original.wav");
         QFile file("original.wav");
-        file.open(QFile::ReadOnly);
 
         QVERIFY(db->addFile(file));
         auto sample = db->getSample(file);
@@ -221,7 +215,6 @@ private slots:
         QVERIFY(dir.rename("original.wav", "subfolder/newname.wav"));
 
         QFile newname("subfolder/newname.wav");
-        QVERIFY(newname.open(QFile::ReadOnly));
         auto pre = db->getFilteredSamples(QList<QDir>(), QList<Tag>());
 
         QVERIFY(db->addFile(newname));

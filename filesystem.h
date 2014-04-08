@@ -13,7 +13,7 @@ public:
     bool findFiles(QDir const& dir, QStringList* extensions = nullptr);
 
 signals:
-    void foundFile(QFile const& file);
+    void foundFile(QFile& file);
 };
 
 #endif // FILESYSTEM_H

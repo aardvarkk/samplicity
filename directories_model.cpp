@@ -215,7 +215,7 @@ void DirectoriesModel::addFile(QString const& path)
 {
     qDebug() << __FUNCSIG__;
 
-    db.addFile(path);
+    db.addFile(QFile(path));
     refresh();
 }
 
