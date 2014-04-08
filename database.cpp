@@ -451,7 +451,7 @@ bool Database::addFile(QFile& file)
         // Add a new sample record
         query.prepare("INSERT INTO samples (dir_id, name, filename, hash) VALUES (?,?,?,?)");
         query.addBindValue(dir_id);
-        query.addBindValue(fileInfo.fileName());
+        query.addBindValue(fileInfo.baseName());
         query.addBindValue(fileInfo.fileName());
         query.addBindValue(hash);
     }
