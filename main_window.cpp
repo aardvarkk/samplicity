@@ -5,9 +5,10 @@
 
 #include "command_add_directory.h"
 #include "command_add_file.h"
+#include "edit_tags_dialog.h"
+#include "error_code.h"
 #include "main_window.h"
 #include "ui_main_window.h"
-#include "edit_tags_dialog.h"
 #include "setting_names.h"
 
 #include "modeltest.h"
@@ -197,6 +198,22 @@ void MainWindow::setApplyTagSelections(Sample const& sample)
     writeSampleTags = true;
 }
 
+void MainWindow::displayError(ErrorCode ec)
+{
+    QString msg;
+
+    switch (ec.code) {
+    case ErrorCode::Success:
+        msg = ec.msg;
+        break;
+    case ErrorCode::FileNotFound:
+        msg = tr("File not found:") + " " + ec.msg;
+        break;
+    }
+
+    ui->statusBar->showMessage(msg);
+}
+
 void MainWindow::sampleSelectionChanged(QModelIndex const& selected, QModelIndex const& deselected)
 {
     qDebug() << __FUNCSIG__;
@@ -214,7 +231,9 @@ void MainWindow::sampleSelectionChanged(QModelIndex const& selected, QModelIndex
 
     auto sample = samplesModel->getSample(samplesProxyModel.mapToSource(selected));
     audioPlayer->stop();
-    audioPlayer->play(sample->fullPath());
+
+    auto err = audioPlayer->play(sample->fullPath());
+    displayError(err);
 }
 
 void MainWindow::filterSamples()

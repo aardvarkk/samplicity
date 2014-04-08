@@ -71,6 +71,7 @@ private slots:
     void on_actionDynamic_Sorting_toggled(bool arg1);
 
 private:
+    void displayError(ErrorCode ec);
     void filterSamples();
 
     QSettings* settings;

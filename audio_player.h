@@ -18,6 +18,8 @@
 #include <irrKlang.h>
 #endif
 
+#include "error_code.h"
+
 class AudioPlayer : public QObject
 {
     Q_OBJECT
@@ -26,7 +28,7 @@ public:
     AudioPlayer(bool loop = false);
     ~AudioPlayer();
 
-    void play(QString const& path);
+    ErrorCode play(QString const& path);
     void setLoop(bool loop);
     void stop();
 

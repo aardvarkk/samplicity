@@ -22,10 +22,14 @@ AudioPlayer::~AudioPlayer()
 #endif
 }
 
-void AudioPlayer::play(QString const& path)
+ErrorCode AudioPlayer::play(QString const& path)
 {
     qDebug() << __FUNCSIG__;
     qDebug() << path;
+
+    if (!QFile::exists(path)) {
+        return ErrorCode(ErrorCode::FileNotFound, path);
+    }
 
 #ifdef MEDIAPLAYER
     delete mediaPlayer;
@@ -47,6 +51,8 @@ void AudioPlayer::play(QString const& path)
     soundEngine->stopAllSounds();
     soundEngine->play2D(path.toLocal8Bit().constData(), this->loop);
 #endif
+
+    return ErrorCode(ErrorCode::Success);
 }
 
 void AudioPlayer::setVolume(int volume)
